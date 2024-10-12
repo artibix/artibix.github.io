@@ -26,14 +26,14 @@
 <meta property="og:site_name" content="Artibix&#39;s Blogs">
 <meta property="og:description" content="Wake On Lan，局域网唤醒主机。上学把台式电脑放家里面了，就想着用手机控制家里面的电脑，有时候在寝室睡觉（冬天）忘关电脑，就想了这样一个损招。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://artibix.github.io/img/wake_on_lan.png">
+<meta property="og:image" content="https://artibix.github.io/img/cover_wake_on_lan.jpg">
 <meta property="article:published_time" content="2020-12-29T04:00:00.000Z">
-<meta property="article:modified_time" content="2024-10-11T11:44:03.690Z">
+<meta property="article:modified_time" content="2024-10-12T02:36:15.197Z">
 <meta property="article:author" content="Artibix">
 <meta property="article:tag" content="Manjaro">
 <meta property="article:tag" content="WOL">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://artibix.github.io/img/wake_on_lan.png">
+<meta name="twitter:image" content="https://artibix.github.io/img/cover_wake_on_lan.jpg">
   
   
   
@@ -226,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          248 字
+          224 字
         
       </span>
     
@@ -237,7 +237,7 @@
         
         
         
-          3 分钟
+          2 分钟
         
       </span>
     
@@ -286,9 +286,9 @@
 <li>在主板上设置 <code>网络唤醒，PCI 唤醒</code>（请查阅主板相关说明书）</li>
 <li>Manjaro 系统安装 <code>ethtool</code> 工具， 查看网卡是否支持 WOL</li>
 </ul>
-<div class="code-wrapper"><pre><code class="hljs bash">&gt; <span class="hljs-built_in">sudo</span> ethtool eno1
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token operator">></span> <span class="token function">sudo</span> <span class="token function">ethtool</span> eno1
 Supports Wake-on: pumbg
-        Wake-on: g</code></pre></div>
+        Wake-on: g</code></pre></div></figure>
 
 <h2 id="启动-WOL"><a href="#启动-WOL" class="headerlink" title="启动 WOL"></a>启动 WOL</h2><ul>
 <li><p>如果 Wake-on 参数是 d (disabled)，使用指令 <code>ethtool -s 网卡名称 wol g</code> 设置成 g (magic packet activity)</p>
@@ -302,43 +302,43 @@ Supports Wake-on: pumbg
 <li><p>更改 tlp 配置</p>
 </li>
 </ul>
-<div class="code-wrapper"><pre><code class="hljs bash">&gt; vim /etc/tlp.conf
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token operator">></span> <span class="token function">vim</span> /etc/tlp.conf
 
-TLP_ENABLE=1
-WOL_DISABLE=N</code></pre></div>
+<span class="token assign-left variable">TLP_ENABLE</span><span class="token operator">=</span><span class="token number">1</span>
+<span class="token assign-left variable">WOL_DISABLE</span><span class="token operator">=</span>N</code></pre></div></figure>
 
 <h2 id="无显示器设置-x11vnc-分辨率"><a href="#无显示器设置-x11vnc-分辨率" class="headerlink" title="无显示器设置 x11vnc 分辨率"></a>无显示器设置 x11vnc 分辨率</h2><p>没有显示器，只有主机也能操作</p>
 <ol>
 <li>安装 <code>xf86-video-dummy</code></li>
 </ol>
-<div class="code-wrapper"><pre><code class="hljs bash">❯ <span class="hljs-built_in">sudo</span> pacman -S dummy</code></pre></div>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">❯ <span class="token function">sudo</span> pacman <span class="token parameter variable">-S</span> dummy</code></pre></div></figure>
 
 <ol start="2">
 <li>添加配置文件</li>
 </ol>
-<div class="code-wrapper"><pre><code class="hljs bash">❯ <span class="hljs-built_in">sudo</span> vim /usr/share/X11/xorg.conf.d/xorg.conf
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">❯ <span class="token function">sudo</span> <span class="token function">vim</span> /usr/share/X11/xorg.conf.d/xorg.conf
 
-Section <span class="hljs-string">&quot;Device&quot;</span>
-    Identifier  <span class="hljs-string">&quot;Configured Video Device&quot;</span>
-    Driver      <span class="hljs-string">&quot;dummy&quot;</span>
+Section <span class="token string">"Device"</span>
+    Identifier  <span class="token string">"Configured Video Device"</span>
+    Driver      <span class="token string">"dummy"</span>
 EndSection
 
-Section <span class="hljs-string">&quot;Monitor&quot;</span>
-    Identifier  <span class="hljs-string">&quot;Configured Monitor&quot;</span>
-    HorizSync 31.5-48.5
-    VertRefresh 50-70
+Section <span class="token string">"Monitor"</span>
+    Identifier  <span class="token string">"Configured Monitor"</span>
+    HorizSync <span class="token number">31.5</span>-48.5
+    VertRefresh <span class="token number">50</span>-70
 EndSection
 
-Section <span class="hljs-string">&quot;Screen&quot;</span>
-    Identifier  <span class="hljs-string">&quot;Default Screen&quot;</span>
-    Monitor     <span class="hljs-string">&quot;Configured Monitor&quot;</span>
-    Device      <span class="hljs-string">&quot;Configured Video Device&quot;</span>
-    DefaultDepth 24
-    SubSection <span class="hljs-string">&quot;Display&quot;</span>
-    Depth 24
-    Modes <span class="hljs-string">&quot;1024x800&quot;</span>
+Section <span class="token string">"Screen"</span>
+    Identifier  <span class="token string">"Default Screen"</span>
+    Monitor     <span class="token string">"Configured Monitor"</span>
+    Device      <span class="token string">"Configured Video Device"</span>
+    DefaultDepth <span class="token number">24</span>
+    SubSection <span class="token string">"Display"</span>
+    Depth <span class="token number">24</span>
+    Modes <span class="token string">"1024x800"</span>
     EndSubSection
-EndSection</code></pre></div>
+EndSection</code></pre></div></figure>
 
 <ol start="3">
 <li>reboot</li>
@@ -434,6 +434,12 @@ EndSection</code></pre></div>
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/reverse-shell/" title="获取 WebShell 和反弹 Bash">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">获取 WebShell 和反弹 Bash</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

