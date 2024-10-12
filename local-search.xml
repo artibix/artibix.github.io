@@ -4,6 +4,59 @@
   
   
   <entry>
+    <title>tools-lazynvim-config</title>
+    <link href="/tools-lazynvim-config/"/>
+    <url>/tools-lazynvim-config/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>programming-specifications</title>
+    <link href="/programming-specifications/"/>
+    <url>/programming-specifications/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>如何使用 Trilium 做笔记</title>
+    <link href="/tools-triliumnext/"/>
+    <url>/tools-triliumnext/</url>
+    
+    <content type="html"><![CDATA[<p>Trilium Notes 开源、跨平台的个人笔记管理软件，可以方便结构化的管理大量笔记，层级无限制，支持多种笔记类型，非常适合用来管理自己的日记、笔记、工作等信息。</p><span id="more"></span><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从第一接触 Markdown 开始，我就一直使用 Markdown 做笔记，后面将所有笔记都写在 Hexo 部署在 Github 上，缺点就是不够隐私。在大学看到同学使用 Notion 做笔记，我也眼馋它对笔记的各种整合，但是因为付费 + 闭源的原因，我还是坚持使用 typora 写笔记。</p><p>在 Github 接触到了 Mrdoc（觅思文档），国人写的在线文档系统，分为开源版和付费版，具有多人写作、版本控制、多平台、导入导出等功能，于是我就将我之前的所有笔记迁移到了 Mrdoc，还买了阿里云的服务器部署，方便实时访问。</p><p>随着笔记和想学的内容的增加，我认为开源版 Mrdoc 已经不适合做笔记（层级有限、笔记类型太少），对于我来说就是一个方便管理 md 文件的地方，没有额外的笔记功能。</p><p>之前就已经注意了了 Trilium，但是一直没用时间迁移过来，忙着毕业和找工作。现在工作稳定了，为了更方便的学习知识，将博客和笔记分开记录，博客使用 Hexo，笔记使用 Trilium，数据备份到坚果云。接下来开始正式介绍、使用 Trilium。</p><div class="note note-danger">            <p>请注意，本文只是介绍 Trilium 的优点和我查阅官方 Wiki 对它的理解，不涉及安装教程。<br>因为 Trilium 已经进入维护阶段，版本停留在了 0.63，我使用的是 Triliumnext，官方仓库在这 <a href="https://github.com/TriliumNext/">https://github.com/TriliumNext/</a><br>相较原版，支持多语言，用 TS 重构，可自定义菜单栏。</p>          </div><h2 id="Trilium-简介"><a href="#Trilium-简介" class="headerlink" title="Trilium 简介"></a>Trilium 简介</h2><p><img src="/img/trilium.png"></p><p>Trilium 是一款开源的、跨平台的笔记和知识管理应用程序，可以帮助用户高效地组织和管理信息。Trilium 采用树形结构来组织笔记，支持丰富的文本格式、嵌入各种媒体文件、自定义元数据，功能强大且灵活，非常适合用来管理个人笔记。下面我分层次解释 Trilium 的特点。</p><h2 id="基础功能"><a href="#基础功能" class="headerlink" title="基础功能"></a>基础功能</h2><h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><p>所有笔记都在 root 下，以树形放置</p><p><img src="/img/trilium_root.png"></p><p>Trilium 支持以下类型的笔记</p><ul><li>文本（使用 CKEditor）</li><li>代码</li><li>图像</li><li>文件</li><li>HTML</li><li>关系图</li><li>书评（针对一本书进行记录）</li><li>Canvas</li><li>Mermaid</li><li>思维导图（Mind Map）</li><li>归档</li></ul><p><img src="/img/trilium_note_type.png"></p><h3 id="多层级"><a href="#多层级" class="headerlink" title="多层级"></a>多层级</h3><p>Trilium 支持无限层级，所有笔记都被视为同等重要的实体，不论哪个节点的笔记，都可以包含笔记内容</p><pre><code class="mermaid">graph TD     A[根笔记] --> B[子笔记1]     A --> C[子笔记2]     B --> D[孙笔记1]     B --> E[孙笔记2]     C --> F[内容]     D --> G[内容]     E --> H[内容]</code></pre><p>也就是说在 Trilium 里面，所有内容都是笔记，这样做将内容和结构进行分离，方便进行动态链接。</p><h3 id="多次分类"><a href="#多次分类" class="headerlink" title="多次分类"></a>多次分类</h3><p>能够将一篇笔记放在不同的父级下，类似操作系统的 <strong>硬链接</strong>，但是不要忘了，Trilium 目录也可以作为笔记放在其他父级下，官方称之为 <strong>Cloning</strong>，但是实际上多了个引用，并不是真正的复制文件过去。</p><h3 id="隐私笔记"><a href="#隐私笔记" class="headerlink" title="隐私笔记"></a>隐私笔记</h3><p>Trilium 支持将笔记内容加密，就算被获取了所有笔记，没有你设置的密码也无法获取笔记内容。</p><p>加密的只是笔记内容，对于笔记的元数据和结构这些无法加密。</p><h2 id="高级功能"><a href="#高级功能" class="headerlink" title="高级功能"></a>高级功能</h2><p>TODO</p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://triliumnext.github.io/Docs/Wiki/patterns-of-personal-knowledge">https://triliumnext.github.io/Docs/Wiki/patterns-of-personal-knowledge</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Tools</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Notes</tag>
+      
+      <tag>Trilium</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>获取 WebShell 和反弹 Bash</title>
     <link href="/reverse-shell/"/>
     <url>/reverse-shell/</url>
@@ -22,7 +75,9 @@
       
       <tag>nc</tag>
       
-      <tag>渗透，Bash</tag>
+      <tag>渗透</tag>
+      
+      <tag>Bash</tag>
       
     </tags>
     

