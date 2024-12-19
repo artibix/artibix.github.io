@@ -1,0 +1,930 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/artibix.jpg">
+  <link rel="icon" href="/img/artibix.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Artibix">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="旧文整理：使用纯 ASCII 字符绘制图形，在 2024 年，已经很少人能用到这些工具了吧，常见于一些规范、协议、linux 帮助文档，采用的都是纯文本形式编写。之前写博客被图床困扰，遂使用纯 ASCII 替换部分简图。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="盘点 ASCII 字符绘图工具">
+<meta property="og:url" content="https://artibix.github.io/tools-ascii-draw/index.html">
+<meta property="og:site_name" content="Artibix&#39;s Blogs">
+<meta property="og:description" content="旧文整理：使用纯 ASCII 字符绘制图形，在 2024 年，已经很少人能用到这些工具了吧，常见于一些规范、协议、linux 帮助文档，采用的都是纯文本形式编写。之前写博客被图床困扰，遂使用纯 ASCII 替换部分简图。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://artibix.github.io/img/cover_ascii.jpg">
+<meta property="article:published_time" content="2020-05-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-12-19T16:17:24.851Z">
+<meta property="article:author" content="Artibix">
+<meta property="article:tag" content="Markdwon">
+<meta property="article:tag" content="Programming">
+<meta property="article:tag" content="VSCode 插件">
+<meta property="article:tag" content="绘图">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artibix.github.io/img/cover_ascii.jpg">
+  
+  
+  
+  <title>盘点 ASCII 字符绘图工具 - Artibix&#39;s Blogs</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"artibix.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Artibix&#39;Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="盘点 ASCII 字符绘图工具"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2020-05-02 00:00" pubdate>
+          2020年5月2日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          687 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          6 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">盘点 ASCII 字符绘图工具</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>旧文整理：使用纯 ASCII 字符绘制图形，在 2024 年，已经很少人能用到这些工具了吧，常见于一些规范、协议、linux 帮助文档，采用的都是纯文本形式编写。之前写博客被图床困扰，遂使用纯 ASCII 替换部分简图。</p>
+<span id="more"></span>
+
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">+---+     +---+     +---+
+<span class="token operator">|</span> A <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> C <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> D <span class="token operator">|</span>
++---+     +---+     +---+
+            <span class="token operator">|</span>
+            <span class="token operator">|</span>
+            <span class="token function">v</span>
+          +---+
+          <span class="token operator">|</span> E <span class="token operator">|</span>
+          +---+
+               <span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>.
+               <span class="token function">v</span>               <span class="token builtin class-name">:</span>
++------+     +---------+     +---------+     +---------+     +--------------+
+<span class="token operator">|</span> Task <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Created <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Audit <span class="token number">1</span> <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Audit <span class="token number">2</span> <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> Execute Task <span class="token operator">|</span>
++------+     +---------+     +---------+     +---------+     +--------------+
+               ^                               <span class="token builtin class-name">:</span>
+               <span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>.</code></pre></div></figure>
+
+<div class="note note-primary">
+            <p>优点：兼容性强，可以在任意显示 ASCII 的设备上展示图形，占用空间极小<br>缺点：只能绘制简单、单一的图形</p>
+          </div>
+
+<h2 id="Graph-Easy"><a href="#Graph-Easy" class="headerlink" title="Graph-Easy"></a><a target="_blank" rel="noopener" href="https://github.com/ironcamel/Graph-Easy">Graph-Easy</a></h2><p>能够将 DOT（一种文本图形描述语言）文件转换成 ASCII、HTML、SVG 图片</p>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># DOT 文本：[hello]->[world]</span>
+
++-------+     +-------+
+<span class="token operator">|</span> hello <span class="token operator">|</span> --<span class="token operator">></span> <span class="token operator">|</span> world <span class="token operator">|</span>
++-------+     +-------+
+
+<span class="token comment"># DOT 文本</span>
+
+<span class="token punctuation">[</span> Client <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:8<span class="token punctuation">;</span><span class="token punctuation">&#125;</span> -- <span class="token punctuation">(</span>A<span class="token punctuation">)</span> Authorizatoin Request --<span class="token operator">></span> <span class="token punctuation">[</span> <span class="token number">1</span>.Resource Owner <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:2<span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span> <span class="token number">1</span>.Resource Owner <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>B<span class="token punctuation">)</span> Authorizatoin Grant --<span class="token operator">></span> <span class="token punctuation">[</span> Client <span class="token punctuation">]</span>
+<span class="token punctuation">[</span> Client <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>C<span class="token punctuation">)</span> Authorizatoin Request --<span class="token operator">></span> <span class="token punctuation">[</span> <span class="token number">2</span>.Authorizatoin Server <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:2<span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span> <span class="token number">2</span>.Authorizatoin Server <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>D<span class="token punctuation">)</span> Access Token --<span class="token operator">></span> <span class="token punctuation">[</span> Client <span class="token punctuation">]</span>
+<span class="token punctuation">[</span> Client <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>E<span class="token punctuation">)</span> Access Token --<span class="token operator">></span> <span class="token punctuation">[</span> <span class="token number">3</span>.Resource Server <span class="token punctuation">]</span><span class="token punctuation">&#123;</span>rows:2<span class="token punctuation">;</span><span class="token punctuation">&#125;</span>
+<span class="token punctuation">[</span> <span class="token number">3</span>.Resource Server <span class="token punctuation">]</span> -- <span class="token punctuation">(</span>F<span class="token punctuation">)</span> Protected Resource --<span class="token operator">></span> <span class="token punctuation">[</span> Client <span class="token punctuation">]</span>
+
+<span class="token comment"># 渲染后</span>
+
++--------+  <span class="token punctuation">(</span>A<span class="token punctuation">)</span> Authorizatoin Request   +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span> ---------------------------<span class="token operator">></span> <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              <span class="token operator">|</span>    <span class="token number">1</span>.Resource Owner    <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>B<span class="token punctuation">)</span> Authorizatoin Grant     <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span> <span class="token operator">&lt;</span>--------------------------- <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>C<span class="token punctuation">)</span> Authorizatoin Request   +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span> ---------------------------<span class="token operator">></span> <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span> Client <span class="token operator">|</span>                              <span class="token operator">|</span> <span class="token number">2</span>.Authorizatoin Server <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>D<span class="token punctuation">)</span> Access Token            <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span> <span class="token operator">&lt;</span>--------------------------- <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>E<span class="token punctuation">)</span> Access Token            +------------------------+
+<span class="token operator">|</span>        <span class="token operator">|</span> ---------------------------<span class="token operator">></span> <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>                              <span class="token operator">|</span>   <span class="token number">3</span>.Resource Server    <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span>  <span class="token punctuation">(</span>F<span class="token punctuation">)</span> Protected Resource      <span class="token operator">|</span>                        <span class="token operator">|</span>
+<span class="token operator">|</span>        <span class="token operator">|</span> <span class="token operator">&lt;</span>--------------------------- <span class="token operator">|</span>                        <span class="token operator">|</span>
++--------+                              +------------------------+</code></pre></div></figure>
+
+<h2 id="Drawit"><a href="#Drawit" class="headerlink" title="Drawit"></a><a target="_blank" rel="noopener" href="https://github.com/vim-scripts/DrawIt">Drawit</a></h2><p>vim 插件，可以绘制 ASCII 图形</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p><code>\di</code> 进入 drawit 模式，<code>\ds</code> 退出</p>
+<h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><table>
+<thead>
+<tr>
+<th>按键和指令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>left</td>
+<td>向左绘制</td>
+</tr>
+<tr>
+<td>right</td>
+<td>向右绘制</td>
+</tr>
+<tr>
+<td>up</td>
+<td>向上绘制</td>
+</tr>
+<tr>
+<td>down</td>
+<td>向下绘制</td>
+</tr>
+<tr>
+<td>h</td>
+<td>左移动</td>
+</tr>
+<tr>
+<td>j</td>
+<td>下移动</td>
+</tr>
+<tr>
+<td>k</td>
+<td>上</td>
+</tr>
+<tr>
+<td>l</td>
+<td>右</td>
+</tr>
+<tr>
+<td>space</td>
+<td>橡皮擦模式</td>
+</tr>
+<tr>
+<td>PD</td>
+<td>右下绘制</td>
+</tr>
+<tr>
+<td>PU</td>
+<td>左下绘制</td>
+</tr>
+<tr>
+<td>HOME</td>
+<td>左上绘制</td>
+</tr>
+<tr>
+<td>END</td>
+<td>右上绘制</td>
+</tr>
+<tr>
+<td>v, &lt;, &gt;, ^</td>
+<td>四个箭头</td>
+</tr>
+<tr>
+<td>\v, \&lt;, \&gt;, ^</td>
+<td>四个粗箭头</td>
+</tr>
+<tr>
+<td>crtl+v &#x2F; 鼠标拖动</td>
+<td>进入 visible 模式</td>
+</tr>
+<tr>
+<td>\l</td>
+<td>在 visible 模式下，对选择块画线</td>
+</tr>
+<tr>
+<td>\a</td>
+<td>呈上，画带箭头的线</td>
+</tr>
+<tr>
+<td>\b</td>
+<td>对选择块画盒子</td>
+</tr>
+<tr>
+<td>\e</td>
+<td>对选择块画椭圆</td>
+</tr>
+<tr>
+<td>\f 字符</td>
+<td>以字符填充光标区域</td>
+</tr>
+<tr>
+<td>\r 字符</td>
+<td>以字符填充选择块填充</td>
+</tr>
+</tbody></table>
+<h2 id="Convert-To-ASCII-Art"><a href="#Convert-To-ASCII-Art" class="headerlink" title="Convert To ASCII Art"></a>Convert To ASCII Art</h2><p>VSCode 插件，能够将字符转换成 ASCII 大图</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">The cake
+is a lie<span class="token operator">!</span>
+████████╗██╗  ██╗███████╗     ██████╗ █████╗ ██╗  ██╗███████╗
+╚══██╔══╝██║  ██║██╔════╝    ██╔════╝██╔══██╗██║ ██╔╝██╔════╝
+   ██║   ███████║█████╗      ██║     ███████║█████╔╝ █████╗
+   ██║   ██╔══██║██╔══╝      ██║     ██╔══██║██╔═██╗ ██╔══╝
+   ██║   ██║  ██║███████╗    ╚██████╗██║  ██║██║  ██╗███████╗
+   ╚═╝   ╚═╝  ╚═╝╚══════╝     ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝
+
+██╗███████╗     █████╗     ██╗     ██╗███████╗██╗
+██║██╔════╝    ██╔══██╗    ██║     ██║██╔════╝██║
+██║███████╗    ███████║    ██║     ██║█████╗  ██║
+██║╚════██║    ██╔══██║    ██║     ██║██╔══╝  ╚═╝
+██║███████║    ██║  ██║    ███████╗██║███████╗██╗
+╚═╝╚══════╝    ╚═╝  ╚═╝    ╚══════╝╚═╝╚══════╝╚═╝</code></pre></div></figure>
+
+<h2 id="toilet-or-figlet"><a href="#toilet-or-figlet" class="headerlink" title="toilet or figlet"></a>toilet or figlet</h2><p>可以将普通的文本转换成各种艺术字</p>
+<h3 id="安装方法"><a href="#安装方法" class="headerlink" title="安装方法"></a>安装方法</h3><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># 这里只演示 Archlinux，其他系统请查看官网</span>
+
+<span class="token function">sudo</span> pacman <span class="token parameter variable">-S</span> toilet
+<span class="token function">sudo</span> pacman <span class="token parameter variable">-S</span> figlet</code></pre></div></figure>
+
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><p><img src="/../img/ascii_example.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Asciiflow2"><a href="#Asciiflow2" class="headerlink" title="Asciiflow2"></a>Asciiflow2</h2><p>VSCode 插件，能够在 VSCode 里面使用鼠标绘制 ASCII 图形</p>
+<h2 id="Mermaid"><a href="#Mermaid" class="headerlink" title="Mermaid"></a><a target="_blank" rel="noopener" href="https://mermaid.js.org/">Mermaid</a></h2><p>Mermaid 不能生成 ASCII 图片，但也是一个好用的文本渲染图片工具，配合 AI 使用非常方便。</p>
+<pre><code class="mermaid">gantt
+    dateFormat MM-DD
+    title 软件开发甘特图
+    section 设计
+    需求: done,des1, 01-06,01-08
+    原型: active,  des2, 01-09, 3d
+    UI 设计: des3, after des2, 5d
+    未来任务: des4, after des3, 5d
+    section 开发
+    学习准备理解需求: crit, done, 01-06,24h
+    设计框架: crit, done, after des2, 2d
+    开发: crit, active, 3d
+    未来任务: crit, 5d
+    休息: 2d
+    section 测试
+    功能测试: active, a1, after des3, 3d
+    压力测试: after a1  , 20h
+    测试报告: 48h</code></pre>
+
+<pre><code class="mermaid">graph TB
+         subgraph one
+         a1-->a2
+         end
+         subgraph two
+         b1-->b2
+         end
+         subgraph three
+         c1-->c2
+         end
+         c1-->a2</code></pre>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>现在程序语言里面有很多内置模块能够将对象用 ASCII 字符体现出来，比如 python-tabulate，相对自己写输出来说也要直观不少，在以前哪个年代，纯 ASCII 字符绘制的图形也是挺炫酷的。</p>
+<div class="note note-primary">
+            <p>参考文章 <a target="_blank" rel="noopener" href="https://www.digglife.net/articles/ascii-flowchart-how-to.html">如何制作纯 ASCII 文本流程图</a></p>
+          </div>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Tools/" class="category-chain-item">Tools</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Markdwon/" class="print-no-link">#Markdwon</a>
+      
+        <a href="/tags/Programming/" class="print-no-link">#Programming</a>
+      
+        <a href="/tags/VSCode-%E6%8F%92%E4%BB%B6/" class="print-no-link">#VSCode 插件</a>
+      
+        <a href="/tags/%E7%BB%98%E5%9B%BE/" class="print-no-link">#绘图</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>盘点 ASCII 字符绘图工具</div>
+      <div>https://artibix.github.io/tools-ascii-draw/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Artibix</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2020年5月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/restore-manjaro-esp/" title="双系统恢复删除的 Linux ESP 分区">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">双系统恢复删除的 Linux ESP 分区</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"artibix/artibix.github.io","repo-id":"R_kgDOM-nVBg","category":"Announcements","category-id":"DIC_kwDOM-nVBs4CjQjW","theme-light":"light","theme-dark":"dark","mapping":"title","reactions-enabled":1,"emit-metadata":0,"input-position":"top","lang":"zh-CN","theme":"preferred_color_scheme","strict":0,"crossorigin":"anonymous"};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
