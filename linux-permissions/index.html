@@ -1,0 +1,885 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/artibix.jpg">
+  <link rel="icon" href="/img/artibix.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Artibix">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Linux 除了 rwx 权限之外，还有哪些权限呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 权限控制系统">
+<meta property="og:url" content="https://artibix.github.io/linux-permissions/index.html">
+<meta property="og:site_name" content="Artibix&#39;s Blogs">
+<meta property="og:description" content="Linux 除了 rwx 权限之外，还有哪些权限呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://artibix.github.io/img/cover-linux-permissions.jpg">
+<meta property="article:published_time" content="2024-11-24T04:24:11.000Z">
+<meta property="article:modified_time" content="2025-05-09T09:04:47.464Z">
+<meta property="article:author" content="Artibix">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artibix.github.io/img/cover-linux-permissions.jpg">
+  
+  
+  
+  <title>Linux 权限控制系统 - Artibix&#39;s Blogs</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"artibix.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Artibix&#39;Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Linux 权限控制系统"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-24 12:24" pubdate>
+          2024年11月24日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Linux 权限控制系统</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Linux 除了 rwx 权限之外，还有哪些权限呢？</p>
+<span id="more"></span>
+
+<h2 id="Why"><a href="#Why" class="headerlink" title="Why"></a>Why</h2><p>在开始介绍之前，先解释下为什么我会思考这个问题。</p>
+<p>我写了一个 Golang 创建 ICMP 监听，代码如下：</p>
+<figure><div class="code-wrapper"><pre class="language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Pinger<span class="token punctuation">)</span> <span class="token function">connect</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+ conn<span class="token punctuation">,</span> err <span class="token operator">:=</span> icmp<span class="token punctuation">.</span><span class="token function">ListenPacket</span><span class="token punctuation">(</span><span class="token string">"ip4:icmp"</span><span class="token punctuation">,</span> <span class="token string">"0.0.0.0"</span><span class="token punctuation">)</span>
+ <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"error creating ICMP connection: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
+ <span class="token punctuation">&#125;</span>
+ p<span class="token punctuation">.</span>conn <span class="token operator">=</span> conn
+ <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">&#125;</span></code></pre></div></figure>
+
+<p>使用非 root 权限的用户运行时报错：error creating ICMP connection: listen ip4:icmp 0.0.0.0: socket: operation not permitted</p>
+<p>这串代码其实是我在模拟 ping 的实现，在 Linux 里面，普通用户使用 ping 不会报错，为什么使用我的程序就会报错呢？查资料了解到 Linux 权限控制系统除了 rwx 之外，还存在一个 capabilities。</p>
+<p>使用指令 <code>setcap cap_net_raw=eip my-program</code> 给程序加上运行创建 socket 的权限后，代码能够顺利运行。</p>
+<h2 id="传统的权限控制-UGO"><a href="#传统的权限控制-UGO" class="headerlink" title="传统的权限控制(UGO)"></a>传统的权限控制(UGO)</h2><figure><div class="code-wrapper"><pre class="language-BASH" data-language="BASH"><code class="language-BASH">➜ ~ ls -l
+total 16
+drwxr-xr-x 3 artibix artibix 4096 Nov 10 16:35 code&#x2F;
+drwxr-xr-x 8 artibix artibix 4096 Oct 14 18:22 github&#x2F;
+drwxr-xr-x 3 artibix artibix 4096 Oct 26 19:09 project&#x2F;
+drwxr-xr-x 4 artibix artibix 4096 Nov 11 09:46 tmp&#x2F;</code></pre></div></figure>
+
+<ul>
+<li>第一个字母代表文件类型：文件类型(-)、目录(d)、符号链接(l)、块设备(b)、字符设备(c)、管道(p)、套接字(s)</li>
+<li>权限分为三组：用户(u)、组(g)、其他(o)</li>
+<li>每组包含读(r&#x3D;4)、写(w&#x3D;2)、执行(x&#x3D;1)权限</li>
+<li>chmod 命令修改权限：chmod 764 file</li>
+</ul>
+<h2 id="特殊权限位-Special-Permissions"><a href="#特殊权限位-Special-Permissions" class="headerlink" title="特殊权限位(Special Permissions)"></a>特殊权限位(Special Permissions)</h2><ul>
+<li>SUID (Set User ID)：当一个程序以 SUID 方式执行时，它的有效用户 ID 会临时变为文件所有者的 UID。这通常用于一些需要以特权用户身份运行的程序，如sudo。</li>
+<li>SGID (Set Group ID)：与 SUID 类似，当一个程序以 SGID 方式执行时，它的有效组 ID 会临时变为文件所有者的 GID。</li>
+<li>Sticky bit：这个权限位主要用于目录。当一个目录设置了sticky bit后，只有文件的所有者、超级用户和目录的所有者才能删除或重命名目录中的文件。这通常用于共享目录，以防止用户随意删除其他人的文件。</li>
+<li>设置 SUID：<code>chmod u+s filename</code> 在文件所有者的 x 权限位上用 s 表示（如 x 变为 s）</li>
+<li>设置 SGID：<code>chmod g+s dirname</code> 在组权限的 x 权限位上用 s 表示（如 x 变为 s ）</li>
+<li>设置 Sticky bit：<code>chmod o+t dirname</code> 在组权限的 x 权限位上用 s 表示（如 x 变为 s）</li>
+</ul>
+<p>示例：</p>
+<figure><div class="code-wrapper"><pre class="language-BASH" data-language="BASH"><code class="language-BASH">➜ ~ ls -l &#x2F;usr&#x2F;bin&#x2F;sudo &#x2F;usr&#x2F;bin&#x2F;passwd
+-rwsr-xr-x 1 root root  80888 Jul  2 19:16 &#x2F;usr&#x2F;bin&#x2F;passwd*
+-rwsr-xr-x 1 root root 257168 Nov 13 15:17 &#x2F;usr&#x2F;bin&#x2F;sudo*</code></pre></div></figure>
+
+<p>这两个都设置了 SUID 权限，普通用户在执行 sudo 命令时，可以临时获得 root 权限。</p>
+<div class="note note-primary">
+            <p>当然，sudo 执行时会检查 &#x2F;etc&#x2F;sudoers 文件，允许的用户和用户组才能够执行 sudo，比如 wheel 用户组</p>
+          </div>
+
+<h2 id="Capabilities"><a href="#Capabilities" class="headerlink" title="Capabilities"></a>Capabilities</h2><p>从 Linux 2.2 开始，创建了一种机制，用于细粒度地控制进程或程序的权限，这就是 Capabilities。它将传统的 root（超级用户）权限拆分为更小的能力集，使得程序可以只获取执行其任务所需的特定权限，而不是完整的 root 权限。</p>
+<p>Capabilities 相关指令：</p>
+<figure><div class="code-wrapper"><pre class="language-BASH" data-language="BASH"><code class="language-BASH"># 查看当前进程的 Capabilities
+capsh --print
+# 查看文件当前的 capabilities
+getcap &#x2F;path&#x2F;to&#x2F;file
+# 设置 capabilities
+setcap cap_net_raw&#x3D;eip &#x2F;path&#x2F;to&#x2F;file
+# 查看当前进程的 capabilities
+getpcaps PID
+# 查看详细文档(如果找不到可以先安装，sudo pacman -S man-pages)
+man capabilities</code></pre></div></figure>
+
+<p><img src="/../img/linux-permissions-getcap.jpg" srcset="/img/loading.gif" lazyload alt="获取 ping 的 capabilities"></p>
+<p>设置 Capabilities 需要指定赋予的 Capabilities 和其 sets。两者介绍如下：</p>
+<h3 id="capabilities"><a href="#capabilities" class="headerlink" title="capabilities"></a>capabilities</h3><ul>
+<li>CAP_CHOWN - 允许修改文件的所有者</li>
+<li>CAP_DAC_OVERRIDE - 忽略文件的 DAC 访问限制</li>
+<li>CAP_DAC_READ_SEARCH - 忽略文件读及目录搜索的 DAC 访问限制</li>
+<li>CAP_FOWNER - 忽略文件权限检查</li>
+<li>CAP_FSETID - 允许设置文件的 setuid&#x2F;setgid 位</li>
+<li>CAP_KILL - 允许发送信号给任意进程</li>
+<li>CAP_SETGID - 允许设置进程的组 ID</li>
+<li>CAP_SETUID - 允许设置进程的用户 ID</li>
+<li>CAP_SETPCAP - 允许修改进程的 capabilities</li>
+<li>CAP_LINUX_IMMUTABLE - 允许修改文件的不可变(immutable)和只追加(append-only)属性</li>
+<li>CAP_NET_BIND_SERVICE - 允许绑定小于 1024 的端口</li>
+<li>CAP_NET_BROADCAST - 允许网络广播和多播访问</li>
+<li>CAP_NET_ADMIN - 允许执行网络管理任务</li>
+<li>CAP_NET_RAW - 允许使用原始套接字</li>
+<li>CAP_IPC_LOCK - 允许锁定共享内存片段</li>
+<li>CAP_IPC_OWNER - 忽略 IPC 所有权检查</li>
+<li>CAP_SYS_MODULE - 允许加载和卸载内核模块</li>
+<li>CAP_SYS_RAWIO - 允许直接访问 I&#x2F;O 端口</li>
+<li>CAP_SYS_CHROOT - 允许使用 chroot()</li>
+<li>CAP_SYS_PTRACE - 允许跟踪任何进程</li>
+<li>CAP_SYS_PACCT - 允许配置进程记账</li>
+<li>CAP_SYS_ADMIN - 允许执行系统管理操作</li>
+<li>CAP_SYS_BOOT - 允许重启系统</li>
+<li>CAP_SYS_NICE - 允许提升优先级和设置其他进程的优先级</li>
+<li>CAP_SYS_RESOURCE - 忽略资源限制</li>
+<li>CAP_SYS_TIME - 允许修改系统时钟</li>
+<li>CAP_SYS_TTY_CONFIG - 允许配置 TTY 设备</li>
+<li>CAP_MKNOD - 允许创建特殊文件</li>
+<li>CAP_LEASE - 允许修改文件锁的 FL_LEASE 标志</li>
+<li>CAP_AUDIT_WRITE - 允许向内核审计日志写入记录</li>
+<li>CAP_AUDIT_CONTROL - 允许配置审计子系统</li>
+<li>CAP_SETFCAP - 允许设置文件 capabilities</li>
+<li>CAP_MAC_OVERRIDE - 允许忽略 MAC（强制访问控制）</li>
+<li>CAP_MAC_ADMIN - 允许配置 MAC</li>
+<li>CAP_SYSLOG - 允许使用 syslog()</li>
+<li>CAP_WAKE_ALARM - 允许触发唤醒 alarm</li>
+<li>CAP_BLOCK_SUSPEND - 允许阻止系统挂起</li>
+<li>CAP_AUDIT_READ - 允许读取审计日志</li>
+<li>CAP_PERFMON - 允许使用性能监控单元(PMU)</li>
+<li>CAP_BPF - 允许创建 BPF 程序</li>
+<li>CAP_CHECKPOINT_RESTORE - 允许检查点和恢复操作</li>
+</ul>
+<h3 id="Capability-sets"><a href="#Capability-sets" class="headerlink" title="Capability sets"></a>Capability sets</h3><p>在 Capabilities 的权限模型中，Permitted、Inheritable、Effective、Bounding 和 Ambient 是进程的能力集合，每个集合定义了进程在不同上下文下如何使用和限制其权限。前三个可以定义在可执行文件上面，也就是 eip 的缩写。</p>
+<ul>
+<li>Permitted Set：包含当前进程允许拥有的 Capabilities 集合。这是一个进程的核心权限集合，它定义了进程可能使用的能力范围。</li>
+<li>Effective Set：当前进程实际正在使用的 Capabilities 集合，Effective Set 是 Permitted Set 的一个子集，即使某个 Capabilities 在 Permitted Set 中，也需要显式激活后才会出现在 Effective Set 中。</li>
+<li>Inheritable Set：定义了哪些 Capabilities 可以从父进程继承到子进程。</li>
+<li>Bounding Set：定义了进程能够拥有的 Capabilities 上限，即便是 root 用户也无法超出此集合。</li>
+<li>Ambient Set：一个较新的 Capabilities 集合（引入于 Linux 4.3），用于在执行新程序时保留特定 Capabilities，而无需特殊文件权限或 execve 限制。</li>
+</ul>
+<h2 id="SELinux"><a href="#SELinux" class="headerlink" title="SELinux"></a>SELinux</h2><div class="note note-primary">
+            <p>目前，AppArmor 为 Ubuntu、OpenSUSE、SUSE、Debian 默认的 LSM；SELinux 为 RHEL、Fedora、CentOS 默认的 LSM。ArchLinux 默认不使用 LSM，需要单独安装启用。</p>
+          </div>
+
+<p>SELinux（Security-Enhanced Linux）是由美国国家安全局（NSA）开发并集成到 Linux 内核中的一个 强制访问控制（Mandatory Access Control, MAC） 系统。它是 Linux 系统中增强安全性的一个重要模块，能够通过策略对系统中的所有对象（文件、进程、网络等）进行精细的权限管理，超越传统的用户权限和文件权限机制。</p>
+<h3 id="强制访问控制-MAC"><a href="#强制访问控制-MAC" class="headerlink" title="强制访问控制 MAC"></a>强制访问控制 MAC</h3><p>自主访问控制（Discretionary Access Control, DAC）</p>
+<ul>
+<li>文件权限 (rwx) 和 owner。</li>
+<li>任何拥有文件的用户都可以修改其权限或允许其他人访问。</li>
+</ul>
+<p>强制访问控制（Mandatory Access Controls, MAC）</p>
+<ul>
+<li>权限由系统管理员定义的安全策略决定，用户和程序无法任意修改。</li>
+<li>即使用户具有 root 权限，也必须遵守 SELinux 策略。</li>
+</ul>
+<h3 id="安全上下文（Security-Context）"><a href="#安全上下文（Security-Context）" class="headerlink" title="安全上下文（Security Context）"></a>安全上下文（Security Context）</h3><p>每个对象（如文件、进程、设备、端口等）都被分配了一个安全上下文，通常由以下三部分组成：</p>
+<figure><div class="code-wrapper"><pre class="language-text" data-language="text"><code class="language-text">user:role:type</code></pre></div></figure>
+
+<ul>
+<li><strong>User（用户）</strong>：SELinux 的安全用户（如 <code>system_u</code>、<code>user_u</code>）。</li>
+<li><strong>Role（角色）</strong>：控制用户可以使用哪些类型的权限（如 <code>system_r</code>）。</li>
+<li><strong>Type（类型）</strong>：核心部分，用于定义资源和进程的访问规则（如 <code>httpd_t</code> 或 <code>httpd_sys_content_t</code>）。</li>
+</ul>
+<h3 id="策略（Policy）"><a href="#策略（Policy）" class="headerlink" title="策略（Policy）"></a>策略（Policy）</h3><p>SELinux 的策略是访问控制规则的集合，定义了哪些操作被允许。例如：</p>
+<ul>
+<li>哪些进程可以访问哪些文件。</li>
+<li>哪些网络端口可以被绑定。</li>
+</ul>
+<p>常见策略包括：</p>
+<ul>
+<li><strong>目标化（Targeted）</strong>：保护指定的系统服务（默认策略，限制系统中关键进程）。</li>
+<li><strong>最小化（Minimal）</strong>：只有最少的控制。</li>
+<li><strong>严格（Strict）</strong>：对系统中的所有进程和对象实施全面控制。</li>
+</ul>
+<h3 id="模式（Modes）"><a href="#模式（Modes）" class="headerlink" title="模式（Modes）"></a>模式（Modes）</h3><p>SELinux 有三种运行模式：</p>
+<ul>
+<li><strong>Enforcing</strong>（强制模式）：严格执行 SELinux 策略，拒绝不符合规则的访问。</li>
+<li><strong>Permissive</strong>（宽容模式）：记录违规访问，但不实际阻止，用于调试和策略调整。</li>
+<li><strong>Disabled</strong>（禁用模式）：完全关闭 SELinux 功能。</li>
+</ul>
+<p>可以通过以下命令查看当前模式：</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">getenforce</code></pre></div></figure>
+
+<p>更改模式：</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> setenforce <span class="token number">0</span>  <span class="token comment"># 切换到 Permissive</span>
+<span class="token function">sudo</span> setenforce <span class="token number">1</span>  <span class="token comment"># 切换到 Enforcing</span></code></pre></div></figure>
+
+<h3 id="布尔值（Booleans）"><a href="#布尔值（Booleans）" class="headerlink" title="布尔值（Booleans）"></a>布尔值（Booleans）</h3><p>SELinux 中的布尔值允许管理员动态调整策略的行为，而无需修改策略文件。例如：</p>
+<ul>
+<li><p>允许或禁止 <code>httpd</code> 访问网络：</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> setsebool <span class="token parameter variable">-P</span> httpd_can_network_connect on</code></pre></div></figure></li>
+</ul>
+<h3 id="工作机制"><a href="#工作机制" class="headerlink" title="工作机制"></a>工作机制</h3><ol>
+<li><p><strong>标签化（Labeling）</strong><br>SELinux 为系统中所有对象分配安全上下文标签（Label），包括：</p>
+<ul>
+<li><p>文件：通过 <code>ls -Z</code> 查看：</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">ls</span> <span class="token parameter variable">-Z</span> /var/www/html/</code></pre></div></figure>
+
+<p>输出示例：</p>
+<figure><div class="code-wrapper"><pre class="language-none"><code class="language-none">drwxr-xr-x. root root system_u:object_r:httpd_sys_content_t:s0 index.html</code></pre></div></figure>
+</li>
+<li><p>进程：通过 <code>ps -Z</code> 查看：</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">ps</span> <span class="token parameter variable">-Z</span> <span class="token operator">|</span> <span class="token function">grep</span> httpd</code></pre></div></figure></li>
+</ul>
+</li>
+<li><p><strong>访问控制决策</strong></p>
+<ul>
+<li>每次访问（如读文件、绑定端口）都需要经过 SELinux 策略的检查。</li>
+<li>SELinux 检查访问请求是否匹配允许规则，如果不匹配，则拒绝并记录日志。</li>
+</ul>
+</li>
+<li><p><strong>日志记录</strong></p>
+<ul>
+<li><p>所有被拒绝的操作都会记录到 <code>/var/log/audit/audit.log</code> 文件中，可以通过工具解析：</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">ausearch <span class="token parameter variable">-m</span> avc</code></pre></div></figure></li>
+</ul>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Tech/" class="category-chain-item">Tech</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Linux/" class="print-no-link">#Linux</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Linux 权限控制系统</div>
+      <div>https://artibix.github.io/linux-permissions/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Artibix</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年11月24日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/laravel-collection/" title="源码分析--Laravel Collection">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">源码分析--Laravel Collection</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/go-append/" title="源码分析--Go append">
+                        <span class="hidden-mobile">源码分析--Go append</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"artibix/artibix.github.io","repo-id":"R_kgDOM-nVBg","category":"Announcements","category-id":"DIC_kwDOM-nVBs4CjQjW","theme-light":"light","theme-dark":"dark","mapping":"title","reactions-enabled":1,"emit-metadata":0,"input-position":"top","lang":"zh-CN","theme":"preferred_color_scheme","strict":0,"crossorigin":"anonymous"};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

